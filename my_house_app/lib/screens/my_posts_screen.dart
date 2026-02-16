@@ -175,7 +175,7 @@ class _MyPostsScreenState extends State<MyPostsScreen2> with SingleTickerProvide
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('Post deleted successfully'),
-            backgroundColor: Color(0xFF6A11CB),
+            backgroundColor: Color(0xFF1976D2),
             duration: Duration(seconds: 3),
           ),
         );
@@ -212,7 +212,7 @@ class _MyPostsScreenState extends State<MyPostsScreen2> with SingleTickerProvide
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     final isLargeScreen = screenWidth > 1200;
-    final isMediumScreen = screenWidth > 800;
+
 
     return Scaffold(
       backgroundColor: const Color(0xFFF8FAFD),
@@ -226,7 +226,7 @@ class _MyPostsScreenState extends State<MyPostsScreen2> with SingleTickerProvide
             gradient: LinearGradient(
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
-              colors: [Color(0xFF6A11CB), Color(0xFF2575FC)],
+              colors: [Color(0xFF1976D2), Color(0xFF2575FC)],
             ),
           ),
         ),
@@ -251,7 +251,7 @@ class _MyPostsScreenState extends State<MyPostsScreen2> with SingleTickerProvide
         child: _loading
             ? const Center(
                 child: CircularProgressIndicator(
-                  valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF6A11CB)),
+                  valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF1976D2)),
                 ),
               )
             : _error != null
@@ -286,7 +286,7 @@ class _MyPostsScreenState extends State<MyPostsScreen2> with SingleTickerProvide
                             icon: const Icon(Icons.refresh_rounded, size: 20),
                             label: const Text('Try Again'),
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: const Color(0xFF6A11CB),
+                              backgroundColor: const Color(0xFF1976D2),
                               foregroundColor: Colors.white,
                               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                               padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
@@ -315,7 +315,7 @@ class _MyPostsScreenState extends State<MyPostsScreen2> with SingleTickerProvide
                           child: Column(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              const Icon(Icons.description_rounded, size: 64, color: Color(0xFF6A11CB)),
+                              const Icon(Icons.description_rounded, size: 64, color: Color(0xFF1976D2)),
                               const SizedBox(height: 16),
                               const Text(
                                 'No Posts Yet',
@@ -337,7 +337,7 @@ class _MyPostsScreenState extends State<MyPostsScreen2> with SingleTickerProvide
                                 icon: const Icon(Icons.add_rounded, size: 20),
                                 label: const Text('Create Your First Post'),
                                 style: ElevatedButton.styleFrom(
-                                  backgroundColor: const Color(0xFF6A11CB),
+                                  backgroundColor: const Color(0xFF1976D2),
                                   foregroundColor: Colors.white,
                                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                                   padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
@@ -349,7 +349,7 @@ class _MyPostsScreenState extends State<MyPostsScreen2> with SingleTickerProvide
                       )
                     : RefreshIndicator(
                         onRefresh: _fetchPosts,
-                        color: const Color(0xFF6A11CB),
+                        color: const Color(0xFF1976D2),
                         backgroundColor: Colors.white,
                         child: LayoutBuilder(
                           builder: (context, constraints) {
@@ -382,7 +382,7 @@ class _MyPostsScreenState extends State<MyPostsScreen2> with SingleTickerProvide
                                 final post = Map<String, dynamic>.from(_posts[index]);
                                 final id = post['id'];
                                 final firstImage = post['images'] != null && (post['images'] as List).isNotEmpty ? post['images'][0] : null;
-                                final imageUrl = firstImage != null ? 'https://sever.mikangaula.store/api/storage/${firstImage['path']}' : '';
+                                final imageUrl = firstImage != null ? 'https://sever.mkori.online/api/storage/${firstImage['path']}' : '';
                                 final title = post['title'] ?? post['category'] ?? 'Untitled';
                                 final description = post['description'] ?? post['explanation'] ?? '';
                                 final amount = double.tryParse(post['amount']?.toString() ?? '0') ?? 0;
@@ -413,7 +413,7 @@ class _MyPostsScreenState extends State<MyPostsScreen2> with SingleTickerProvide
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => NavigationService.navigateTo('/post-house'),
-        backgroundColor: const Color(0xFF6A11CB),
+        backgroundColor: const Color(0xFF1976D2),
         tooltip: 'Create New Post',
         child: const Icon(Icons.add_rounded, color: Colors.white),
       ),
@@ -446,6 +446,7 @@ class ManageablePostCard extends StatelessWidget {
     required this.onEdit,
     required this.onDelete,
   });
+
 
   void _sharePost(BuildContext context) {
     Share.share(
@@ -525,7 +526,7 @@ class ManageablePostCard extends StatelessWidget {
                             child: const Center(
                               child: CircularProgressIndicator(
                                 strokeWidth: 2,
-                                valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF6A11CB)),
+                                valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF1976D2)),
                               ),
                             ),
                           ),
@@ -556,7 +557,7 @@ class ManageablePostCard extends StatelessWidget {
                     padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                     decoration: BoxDecoration(
                       gradient: const LinearGradient(
-                        colors: [Color(0xFF6A11CB), Color(0xFF2575FC)],
+                        colors: [Color(0xFF1976D2), Color(0xFF2575FC)],
                       ),
                       borderRadius: BorderRadius.circular(12),
                     ),
@@ -577,7 +578,7 @@ class ManageablePostCard extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                   decoration: BoxDecoration(
                     gradient: const LinearGradient(
-                      colors: [Color(0xFF6A11CB), Color(0xFF2575FC)],
+                      colors: [Color(0xFF1976D2), Color(0xFF2575FC)],
                     ),
                     borderRadius: BorderRadius.circular(16),
                   ),
@@ -604,13 +605,13 @@ class ManageablePostCard extends StatelessWidget {
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                         decoration: BoxDecoration(
-                          color: const Color(0xFF6A11CB).withOpacity(0.1),
+                          color: const Color(0xFF1976D2).withOpacity(0.1),
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: Text(
                           category ?? 'PROPERTY',
                           style: const TextStyle(
-                            color: Color(0xFF6A11CB),
+                            color: Color(0xFF1976D2),
                             fontSize: 12,
                             fontWeight: FontWeight.w600,
                           ),
@@ -662,7 +663,7 @@ class ManageablePostCard extends StatelessWidget {
                   const SizedBox(height: 12),
                   Row(
                     children: [
-                      const Icon(Icons.location_on_rounded, size: 16, color: Color(0xFF6A11CB)),
+                      const Icon(Icons.location_on_rounded, size: 16, color: Color(0xFF1976D2)),
                       const SizedBox(width: 4),
                       Expanded(
                         child: Text(
@@ -676,7 +677,7 @@ class ManageablePostCard extends StatelessWidget {
                   const SizedBox(height: 4),
                   Row(
                     children: [
-                      const Icon(Icons.home_rounded, size: 16, color: Color(0xFF6A11CB)),
+                      const Icon(Icons.home_rounded, size: 16, color: Color(0xFF1976D2)),
                       const SizedBox(width: 4),
                       Text(
                         '${post['street'] ?? ''} • ${post['room_no'] ?? ''} rooms',
@@ -698,19 +699,57 @@ class ManageablePostCard extends StatelessWidget {
                           color: _getStatusColor(post['status'] ?? 'pending').withOpacity(0.1),
                           borderRadius: BorderRadius.circular(12),
                         ),
-                        child: Text(
+                        child: post['status']=="paid"? Text(
                           (post['status'] ?? 'pending').toUpperCase(),
                           style: TextStyle(
                             color: _getStatusColor(post['status'] ?? 'pending'),
                             fontSize: 10,
                             fontWeight: FontWeight.w600,
                           ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 16),
-                  Row(
+                        ):Column(
+                          children: [
+                            Text(
+                              (post['status'] ?? 'pending').toUpperCase(),
+                              style: TextStyle(
+                                color: _getStatusColor(post['status'] ?? 'pending'),
+                                fontSize: 10,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                            const SizedBox(height: 2),
+                            ElevatedButton(
+                              onPressed: () async {
+                                 _verifyPost(context, post['id']);
+                                final uri = Uri.parse('https://payments.azampay.co.tz/?id=019bc6c2-01af-70be-b1da-87959e657e21&language=en');
+                                if (await canLaunchUrl(uri)) {
+                                  await launchUrl(uri, mode: LaunchMode.externalApplication);
+                                } else {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(content: Text('Could not open payment link')),
+                                  );
+                                }
+                               
+                              },
+                              child: const Text("make paid",
+                              style: TextStyle(
+                                fontSize: 10,
+                                fontWeight: FontWeight.w100,
+                                color: Colors.white,
+                              )),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.blue,
+                                foregroundColor: Colors.white,
+                                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                                textStyle: const TextStyle(fontSize: 10, fontWeight: FontWeight.w600),
+                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                              ),
+                            ),
+                          ],
+                        ),),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+                    Row(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
                       _buildActionButton(
@@ -755,21 +794,85 @@ class ManageablePostCard extends StatelessWidget {
       children: [
         IconButton(
           icon: Icon(icon, size: 22),
-          color: isDestructive ? const Color(0xFFE53E3E) : const Color(0xFF6A11CB),
+          color: isDestructive ? const Color(0xFFE53E3E) : const Color(0xFF1976D2),
           onPressed: onPressed,
         ),
         Text(
           label,
           style: TextStyle(
             fontSize: 10,
-            color: isDestructive ? const Color(0xFFE53E3E) : const Color(0xFF6A11CB),
+            color: isDestructive ? const Color(0xFFE53E3E) : const Color(0xFF1976D2),
             fontWeight: FontWeight.w500,
           ),
         ),
       ],
     );
   }
-}
+  Future<void> _verifyPost(BuildContext context, int id) async {
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (_) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: const Text(
+          'Verify Post',
+          style: TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF1A202C)),
+        ),
+        content: const Text('Are you sure you want to verify this post? tafadhali  lipia kiasi cha shilingi 1000 kama malipo ya hiari ya kutambua nyumba yako'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Cancel', style: TextStyle(color: Colors.grey)),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(context, true),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFF14B8A6),
+              foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            ),
+            child: const Text('Verify'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirm != true) return;
+
+    try {
+      await ApiService.postJson('/api/admin/verify_post/$id', {});
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Text('Post verified successfully'),
+          backgroundColor: const Color(0xFF1976D2),
+          duration: const Duration(seconds: 3),
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        ),
+      );
+    } on ApiException catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error: ${e.body?.toString() ?? 'Failed to verify post'}'),
+          backgroundColor: const Color(0xFFE53E3E),
+          duration: const Duration(seconds: 3),
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        ),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error: $e'),
+          backgroundColor: const Color(0xFFE53E3E),
+          duration: const Duration(seconds: 3),
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        ),
+      );
+    }
+  }
+    }
+
 
 // Updated PreviewScreen to be responsive
 class PreviewScreen extends StatelessWidget {
@@ -812,7 +915,7 @@ class PreviewScreen extends StatelessWidget {
             gradient: LinearGradient(
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
-              colors: [Color(0xFF6A11CB), Color(0xFF2575FC)],
+              colors: [Color(0xFF1976D2), Color(0xFF2575FC)],
             ),
           ),
         ),
@@ -840,7 +943,7 @@ class PreviewScreen extends StatelessWidget {
                       PageView.builder(
                         itemCount: post.images.length,
                         itemBuilder: (context, index) {
-                          final imageUrl = 'https://sever.mikangaula.store/api/storage/${post.images[index]['path']}';
+                          final imageUrl = 'https://sever.mkori.online/api/storage/${post.images[index]['path']}';
                           return CachedNetworkImage(
                             imageUrl: imageUrl,
                             fit: BoxFit.cover,
@@ -848,7 +951,7 @@ class PreviewScreen extends StatelessWidget {
                               color: Colors.grey[300],
                               child: const Center(
                                 child: CircularProgressIndicator(
-                                  valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF6A11CB)),
+                                  valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF1976D2)),
                                 ),
                               ),
                             ),
@@ -907,7 +1010,7 @@ class PreviewScreen extends StatelessWidget {
                                   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                                   decoration: BoxDecoration(
                                     gradient: const LinearGradient(
-                                      colors: [Color(0xFF6A11CB), Color(0xFF2575FC)],
+                                      colors: [Color(0xFF1976D2), Color(0xFF2575FC)],
                                     ),
                                     borderRadius: BorderRadius.circular(16),
                                   ),
@@ -928,7 +1031,7 @@ class PreviewScreen extends StatelessWidget {
                       const SizedBox(height: 20),
                       Row(
                         children: [
-                          const Icon(Icons.location_on_rounded, size: 20, color: Color(0xFF6A11CB)),
+                          const Icon(Icons.location_on_rounded, size: 20, color: Color(0xFF1976D2)),
                           const SizedBox(width: 8),
                           Expanded(
                             child: Text(
@@ -941,7 +1044,7 @@ class PreviewScreen extends StatelessWidget {
                       const SizedBox(height: 12),
                       Row(
                         children: [
-                          const Icon(Icons.meeting_room_rounded, size: 20, color: Color(0xFF6A11CB)),
+                          const Icon(Icons.meeting_room_rounded, size: 20, color: Color(0xFF1976D2)),
                           const SizedBox(width: 8),
                           Text(
                             '${post.roomNo} rooms',
@@ -989,7 +1092,7 @@ class PreviewScreen extends StatelessWidget {
                               decoration: const BoxDecoration(
                                 shape: BoxShape.circle,
                                 gradient: LinearGradient(
-                                  colors: [Color(0xFF6A11CB), Color(0xFF2575FC)],
+                                  colors: [Color(0xFF1976D2), Color(0xFF2575FC)],
                                 ),
                               ),
                               child: const Icon(Icons.person_rounded, color: Colors.white, size: 28),
@@ -1017,7 +1120,7 @@ class PreviewScreen extends StatelessWidget {
                             ),
                             if (post.user['phone'] != null)
                               IconButton(
-                                icon: const Icon(Icons.message_rounded, color: Color(0xFF6A11CB), size: 32),
+                                icon: const Icon(Icons.message_rounded, color: Color(0xFF1976D2), size: 32),
                                 onPressed: () => _launchWhatsApp(context, post.user['phone']),
                                 tooltip: 'Contact via WhatsApp',
                               ),
@@ -1034,5 +1137,8 @@ class PreviewScreen extends StatelessWidget {
         ),
       ),
     );
+
+    
   }
-}
+  
+  }

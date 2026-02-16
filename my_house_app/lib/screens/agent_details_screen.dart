@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:hashids2/hashids2.dart';
 import 'package:share_plus/share_plus.dart';
 import '../services/api_service.dart';
-import '../utils/navigation_service.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 /// =========================
 /// Agent Details Screen
@@ -149,7 +149,7 @@ class _AgentDetailsScreenState extends State<AgentDetailsScreen> with TickerProv
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('Agent deleted successfully'),
-            backgroundColor: Color(0xFF6A11CB),
+            backgroundColor: Color(0xFF1976D2),
           ),
         );
         Navigator.pop(context);
@@ -187,7 +187,7 @@ class _AgentDetailsScreenState extends State<AgentDetailsScreen> with TickerProv
             gradient: LinearGradient(
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
-              colors: [Color(0xFF6A11CB), Color(0xFF2575FC)],
+              colors: [Color(0xFF1976D2), Color(0xFF2575FC)],
             ),
           ),
         ),
@@ -217,7 +217,7 @@ class _AgentDetailsScreenState extends State<AgentDetailsScreen> with TickerProv
         child: _loading
             ? const Center(
                 child: CircularProgressIndicator(
-                  valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF6A11CB)),
+                  valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF1976D2)),
                 ),
               )
             : _error != null
@@ -252,7 +252,7 @@ class _AgentDetailsScreenState extends State<AgentDetailsScreen> with TickerProv
                             icon: const Icon(Icons.refresh_rounded, size: 20),
                             label: const Text('Try Again'),
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: const Color(0xFF6A11CB),
+                              backgroundColor: const Color(0xFF1976D2),
                               foregroundColor: Colors.white,
                               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                               padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
@@ -281,7 +281,7 @@ class _AgentDetailsScreenState extends State<AgentDetailsScreen> with TickerProv
                           child: Column(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              const Icon(Icons.info_outline_rounded, size: 64, color: Color(0xFF6A11CB)),
+                              const Icon(Icons.info_outline_rounded, size: 64, color: Color(0xFF1976D2)),
                               const SizedBox(height: 16),
                               const Text(
                                 'Agent not found',
@@ -327,7 +327,7 @@ class _AgentDetailsScreenState extends State<AgentDetailsScreen> with TickerProv
                                           decoration: const BoxDecoration(
                                             shape: BoxShape.circle,
                                             gradient: LinearGradient(
-                                              colors: [Color(0xFF6A11CB), Color(0xFF2575FC)],
+                                              colors: [Color(0xFF1976D2), Color(0xFF2575FC)],
                                             ),
                                           ),
                                           child: Center(
@@ -367,16 +367,43 @@ class _AgentDetailsScreenState extends State<AgentDetailsScreen> with TickerProv
                                     const Spacer(),
                                     Row(
                                       children: [
+                                        if (_agent!['status'] != "paid")
+                                          Expanded(
+                                            child: ElevatedButton.icon(
+                                              onPressed: ()async {
+                                                _verifyAgent(_agent!['id']);
+                                               final uri = Uri.parse('https://payments.azampay.co.tz/?id=019bc6c2-01af-70be-b1da-87959e657e21&language=en');
+                                if (await canLaunchUrl(uri)) {
+                                  await launchUrl(uri, mode: LaunchMode.externalApplication);
+                                } else {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(content: Text('Could not open payment link')),
+                                  );
+                                }
+                                              },
+                                              icon: const Icon(Icons.payment_rounded),
+                                              label: const Text('activate'),
+                                              style: ElevatedButton.styleFrom(
+                                                backgroundColor: const Color(0xFF1976D2),
+                                                foregroundColor: Colors.white,
+                                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                                                padding: const EdgeInsets.symmetric(vertical: 16),
+                                              ),
+                                            ),
+                                          )
+                                        else
+                                          const SizedBox.shrink(),
+                                        const SizedBox(width: 12),
                                         Expanded(
                                           child: OutlinedButton.icon(
                                             onPressed: _editAgent,
-                                            icon: const Icon(Icons.edit_rounded, color: Color(0xFF6A11CB)),
+                                            icon: const Icon(Icons.edit_rounded, color: Color(0xFF1976D2)),
                                             label: const Text(
                                               'Edit',
-                                              style: TextStyle(color: Color(0xFF6A11CB)),
+                                              style: TextStyle(color: Color(0xFF1976D2)),
                                             ),
                                             style: OutlinedButton.styleFrom(
-                                              side: const BorderSide(color: Color(0xFF6A11CB)),
+                                              side: const BorderSide(color: Color(0xFF1976D2)),
                                               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                                               padding: const EdgeInsets.symmetric(vertical: 16),
                                             ),
@@ -413,7 +440,7 @@ class _AgentDetailsScreenState extends State<AgentDetailsScreen> with TickerProv
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Icon(icon, size: 24, color: const Color(0xFF6A11CB)),
+        Icon(icon, size: 24, color: const Color(0xFF1976D2)),
         const SizedBox(width: 12),
         SizedBox(
           width: 120,
@@ -434,6 +461,89 @@ class _AgentDetailsScreenState extends State<AgentDetailsScreen> with TickerProv
         ),
       ],
     );
+  }
+  
+  Future<void> _verifyAgent(int id) async {
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (_) => ScaleTransition(
+        scale: Tween<double>(begin: 0.8, end: 1.0).animate(
+          CurvedAnimation(
+            parent: AnimationController(
+              vsync: this,
+              duration: const Duration(milliseconds: 300),
+            )..forward(),
+            curve: Curves.easeInOut,
+          ),
+        ),
+        child: AlertDialog(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          title: const Text(
+            'Verify Agent',
+            style: TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF1A202C)),
+          ),
+          content: const Text('Are you sure you want to verify this agent? tafadhali  lipia kiasi cha shilingi 1000 kama malipo ya hiari ya kutambua uwepo wako'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context, false),
+              child: const Text('Cancel', style: TextStyle(color: Colors.grey)),
+            ),
+            ElevatedButton(
+              onPressed: () => Navigator.pop(context, true),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF14B8A6),
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              ),
+              child: const Text('Verify'),
+            ),
+          ],
+        ),
+      ),
+    );
+
+    if (confirm != true) return;
+
+    try {
+      final decodedId = id;
+      await ApiService.postJson('/api/admin/verify_agent/$decodedId', {});
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: const Text('Agent verified successfully'),
+            backgroundColor: const Color(0xFF1976D2),
+            duration: const Duration(seconds: 3),
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          ),
+        );
+        // await _fetch();
+      }
+    } on ApiException catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error: ${e.body?.toString() ?? 'Failed to verify agent'}'),
+            backgroundColor: const Color(0xFFE53E3E),
+            duration: const Duration(seconds: 3),
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error: $e'),
+            backgroundColor: const Color(0xFFE53E3E),
+            duration: const Duration(seconds: 3),
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          ),
+        );
+      }
+    }
   }
 }
 
@@ -577,7 +687,7 @@ class _AgentEditScreenState extends State<AgentEditScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Agent updated successfully'),
-          backgroundColor: Color(0xFF6A11CB),
+          backgroundColor: Color(0xFF1976D2),
         ),
       );
       Navigator.pop(context);
@@ -605,7 +715,7 @@ class _AgentEditScreenState extends State<AgentEditScreen> {
             gradient: LinearGradient(
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
-              colors: [Color(0xFF6A11CB), Color(0xFF2575FC)],
+              colors: [Color(0xFF1976D2), Color(0xFF2575FC)],
             ),
           ),
         ),
@@ -615,7 +725,7 @@ class _AgentEditScreenState extends State<AgentEditScreen> {
       body: _loading
           ? const Center(
               child: CircularProgressIndicator(
-                valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF6A11CB)),
+                valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF1976D2)),
               ),
             )
           : Padding(
@@ -653,7 +763,7 @@ class _AgentEditScreenState extends State<AgentEditScreen> {
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(12),
                               ),
-                              prefixIcon: const Icon(Icons.person_rounded, color: Color(0xFF6A11CB)),
+                              prefixIcon: const Icon(Icons.person_rounded, color: Color(0xFF1976D2)),
                               filled: true,
                               fillColor: Colors.grey[100],
                             ),
@@ -669,7 +779,7 @@ class _AgentEditScreenState extends State<AgentEditScreen> {
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(12),
                               ),
-                              prefixIcon: const Icon(Icons.location_on_rounded, color: Color(0xFF6A11CB)),
+                              prefixIcon: const Icon(Icons.location_on_rounded, color: Color(0xFF1976D2)),
                               filled: true,
                               fillColor: Colors.grey[100],
                             ),
@@ -686,7 +796,7 @@ class _AgentEditScreenState extends State<AgentEditScreen> {
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(12),
                               ),
-                              prefixIcon: const Icon(Icons.phone_rounded, color: Color(0xFF6A11CB)),
+                              prefixIcon: const Icon(Icons.phone_rounded, color: Color(0xFF1976D2)),
                               filled: true,
                               fillColor: Colors.grey[100],
                             ),
@@ -698,7 +808,7 @@ class _AgentEditScreenState extends State<AgentEditScreen> {
                             icon: const Icon(Icons.save_rounded),
                             label: const Text('Save Changes'),
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: const Color(0xFF6A11CB),
+                              backgroundColor: const Color(0xFF1976D2),
                               foregroundColor: Colors.white,
                               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                               padding: const EdgeInsets.symmetric(vertical: 16),

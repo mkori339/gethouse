@@ -165,7 +165,7 @@ class _SigninScreenState extends State<SigninScreen> {
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
             colors: [
-              const Color(0xFF6A11CB).withOpacity(0.9),
+              const Color(0xFF1976D2).withOpacity(0.9),
               const Color(0xFF2575FC).withOpacity(0.9),
             ],
           ),
@@ -320,7 +320,7 @@ class _SigninScreenState extends State<SigninScreen> {
                                             height: 56,
                                             child: Center(
                                               child: CircularProgressIndicator(
-                                                valueColor: AlwaysStoppedAnimation<Color>(const Color(0xFF6A11CB)),
+                                                valueColor: AlwaysStoppedAnimation<Color>(const Color(0xFF1976D2)),
                                                 strokeWidth: 2.5,
                                               ),
                                             ),
@@ -328,14 +328,14 @@ class _SigninScreenState extends State<SigninScreen> {
                                         : ElevatedButton(
                                             onPressed: _login,
                                             style: ElevatedButton.styleFrom(
-                                              backgroundColor: const Color(0xFF6A11CB),
+                                              backgroundColor: const Color(0xFF1976D2),
                                               foregroundColor: Colors.white,
                                               padding: const EdgeInsets.symmetric(vertical: 18,horizontal: 16),
                                               shape: RoundedRectangleBorder(
                                                 borderRadius: BorderRadius.circular(16),
                                               ),
                                               elevation: 5,
-                                              shadowColor: const Color(0xFF6A11CB).withOpacity(0.4),
+                                              shadowColor: const Color(0xFF1976D2).withOpacity(0.4),
                                             ),
                                             child: SizedBox(
                                               child: const Text(
@@ -431,7 +431,7 @@ class _SigninScreenState extends State<SigninScreen> {
       validator: validator,
       decoration: InputDecoration(
         labelText: labelText,
-        prefixIcon: Icon(icon, color: const Color(0xFF6A11CB)),
+        prefixIcon: Icon(icon, color: const Color(0xFF1976D2)),
         suffixIcon: isPassword
             ? IconButton(
                 icon: Icon(
@@ -446,16 +446,16 @@ class _SigninScreenState extends State<SigninScreen> {
           borderSide: BorderSide.none,
         ),
         filled: true,
-        fillColor: Colors.grey[100],
+         fillColor: Colors.transparent,
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),
           borderSide: BorderSide(color: Colors.grey[300]!),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),
-          borderSide: const BorderSide(color: Color(0xFF6A11CB), width: 2),
+          borderSide: const BorderSide(color: Color(0xFF1976D2), width: 2),
         ),
-        floatingLabelStyle: const TextStyle(color: Color(0xFF6A11CB)),
+        floatingLabelStyle: const TextStyle(color: Color(0xFF1976D2)),
         contentPadding: const EdgeInsets.symmetric(vertical: 18, horizontal: 20),
       ),
     );
@@ -472,7 +472,7 @@ class _SigninScreenState extends State<SigninScreen> {
           child: Text(
             linkText,
             style: const TextStyle(
-              color: Color(0xFF6A11CB),
+              color: Color(0xFF1976D2),
               fontWeight: FontWeight.bold,
             ),
           ),

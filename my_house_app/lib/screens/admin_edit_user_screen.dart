@@ -181,7 +181,7 @@ class _AdminEditUserScreenState extends State<AdminEditUserScreen> with TickerPr
             ElevatedButton(
               onPressed: () => Navigator.pop(context, true),
               style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF6A11CB),
+                backgroundColor: const Color(0xFF1976D2),
                 foregroundColor: Colors.white,
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
               ),
@@ -218,7 +218,7 @@ class _AdminEditUserScreenState extends State<AdminEditUserScreen> with TickerPr
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: const Text('User updated successfully'),
-            backgroundColor: const Color(0xFF6A11CB),
+            backgroundColor: const Color(0xFF1976D2),
             duration: const Duration(seconds: 3),
             behavior: SnackBarBehavior.floating,
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -300,7 +300,7 @@ class _AdminEditUserScreenState extends State<AdminEditUserScreen> with TickerPr
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: const Text('User deleted successfully'),
-            backgroundColor: const Color(0xFF6A11CB),
+            backgroundColor: const Color(0xFF1976D2),
             duration: const Duration(seconds: 3),
             behavior: SnackBarBehavior.floating,
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -402,7 +402,7 @@ class _AdminEditUserScreenState extends State<AdminEditUserScreen> with TickerPr
             gradient: LinearGradient(
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
-              colors: [Color(0xFF6A11CB), Color(0xFF2575FC)],
+              colors: [Color(0xFF1976D2), Color(0xFF2575FC)],
             ),
           ),
         ),
@@ -432,7 +432,7 @@ class _AdminEditUserScreenState extends State<AdminEditUserScreen> with TickerPr
         child: _loading
             ? const Center(
                 child: CircularProgressIndicator(
-                  valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF6A11CB)),
+                  valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF1976D2)),
                 ),
               )
             : _userId == null
@@ -574,10 +574,10 @@ class _AdminEditUserScreenState extends State<AdminEditUserScreen> with TickerPr
                                     decoration: InputDecoration(
                                       labelText: 'Role',
                                       labelStyle: const TextStyle(
-                                        color: Color(0xFF6A11CB),
+                                        color: Color(0xFF1976D2),
                                         fontWeight: FontWeight.w600,
                                       ),
-                                      prefixIcon: const Icon(Icons.admin_panel_settings_rounded, color: Color(0xFF6A11CB)),
+                                      prefixIcon: const Icon(Icons.admin_panel_settings_rounded, color: Color(0xFF1976D2)),
                                       border: OutlineInputBorder(
                                         borderRadius: BorderRadius.circular(12),
                                         borderSide: BorderSide(color: Colors.grey[300]!, width: 1.5),
@@ -588,7 +588,7 @@ class _AdminEditUserScreenState extends State<AdminEditUserScreen> with TickerPr
                                       ),
                                       focusedBorder: OutlineInputBorder(
                                         borderRadius: BorderRadius.circular(12),
-                                        borderSide: const BorderSide(color: Color(0xFF6A11CB), width: 2),
+                                        borderSide: const BorderSide(color: Color(0xFF1976D2), width: 2),
                                       ),
                                       errorBorder: OutlineInputBorder(
                                         borderRadius: BorderRadius.circular(12),
@@ -624,7 +624,7 @@ class _AdminEditUserScreenState extends State<AdminEditUserScreen> with TickerPr
                                     onChanged: (v) => setState(() {
                                       _isBlocked = v;
                                     }),
-                                    activeColor: const Color(0xFF6A11CB),
+                                    activeColor: const Color(0xFF1976D2),
                                     inactiveTrackColor: Colors.grey[300],
                                     contentPadding: const EdgeInsets.symmetric(horizontal: 12),
                                   ),
@@ -692,7 +692,7 @@ class _AdminEditUserScreenState extends State<AdminEditUserScreen> with TickerPr
                                               : const Icon(Icons.save_rounded, size: 20),
                                           label: const Text('Save'),
                                           style: ElevatedButton.styleFrom(
-                                            backgroundColor: const Color(0xFF6A11CB),
+                                            backgroundColor: const Color(0xFF1976D2),
                                             foregroundColor: Colors.white,
                                             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                                             padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
@@ -700,8 +700,8 @@ class _AdminEditUserScreenState extends State<AdminEditUserScreen> with TickerPr
                                           ).copyWith(
                                             backgroundColor: MaterialStateProperty.resolveWith<Color>(
                                               (states) => states.contains(MaterialState.hovered)
-                                                  ? const Color(0xFF6A11CB).withOpacity(0.9)
-                                                  : const Color(0xFF6A11CB),
+                                                  ? const Color(0xFF1976D2).withOpacity(0.9)
+                                                  : const Color(0xFF1976D2),
                                             ),
                                           ),
                                         ),
@@ -734,14 +734,14 @@ class _AdminEditUserScreenState extends State<AdminEditUserScreen> with TickerPr
       decoration: InputDecoration(
         labelText: label,
         labelStyle: const TextStyle(
-          color: Color(0xFF6A11CB),
+          color: Color(0xFF1976D2),
           fontWeight: FontWeight.w600,
         ),
-        prefixIcon: Icon(icon, color: const Color(0xFF6A11CB)),
+        prefixIcon: Icon(icon, color: const Color(0xFF1976D2)),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
           borderSide: const BorderSide(
-            color: Color(0xFF6A11CB),
+            color: Color(0xFF1976D2),
             width: 1.5,
           ),
         ),
@@ -755,7 +755,7 @@ class _AdminEditUserScreenState extends State<AdminEditUserScreen> with TickerPr
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
           borderSide: const BorderSide(
-            color: Color(0xFF6A11CB),
+            color: Color(0xFF1976D2),
             width: 2,
           ),
         ),
@@ -784,7 +784,7 @@ class _AdminEditUserScreenState extends State<AdminEditUserScreen> with TickerPr
         fontSize: isLargeScreen ? 16 : 14,
         color: const Color(0xFF1A202C),
       ),
-      cursorColor: const Color(0xFF6A11CB),
+      cursorColor: const Color(0xFF1976D2),
     );
   }
 }

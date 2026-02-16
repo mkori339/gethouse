@@ -113,7 +113,7 @@ class _AgentRequestScreenState extends State<AgentRequestScreen> with TickerProv
             ElevatedButton(
               onPressed: () => Navigator.pop(ctx, true),
               style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF6A11CB),
+                backgroundColor: const Color(0xFF1976D2),
                 foregroundColor: Colors.white,
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
               ),
@@ -148,7 +148,7 @@ class _AgentRequestScreenState extends State<AgentRequestScreen> with TickerProv
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Agent request submitted successfully!'),
-          backgroundColor: Color(0xFF6A11CB),
+          backgroundColor: Color(0xFF1976D2),
           duration: Duration(seconds: 3),
         ),
       );
@@ -200,7 +200,7 @@ class _AgentRequestScreenState extends State<AgentRequestScreen> with TickerProv
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: const Text('Close', style: TextStyle(color: Color(0xFF6A11CB))),
+            child: const Text('Close', style: TextStyle(color: Color(0xFF1976D2))),
           ),
         ],
       ),
@@ -224,7 +224,7 @@ class _AgentRequestScreenState extends State<AgentRequestScreen> with TickerProv
             gradient: LinearGradient(
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
-              colors: [Color(0xFF6A11CB), Color(0xFF2575FC)],
+              colors: [Color(0xFF1976D2), Color(0xFF2575FC)],
             ),
           ),
         ),
@@ -293,7 +293,7 @@ class _AgentRequestScreenState extends State<AgentRequestScreen> with TickerProv
                               decoration: InputDecoration(
                                 labelText: 'Full Name',
                                 border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-                                prefixIcon: const Icon(Icons.person_rounded, color: Color(0xFF6A11CB)),
+                                prefixIcon: const Icon(Icons.person_rounded, color: Color(0xFF1976D2)),
                                 filled: true,
                                 fillColor: Colors.grey[100],
                               ),
@@ -313,7 +313,7 @@ class _AgentRequestScreenState extends State<AgentRequestScreen> with TickerProv
                               decoration: InputDecoration(
                                 labelText: 'Region/Area of Operation',
                                 border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-                                prefixIcon: const Icon(Icons.location_on_rounded, color: Color(0xFF6A11CB)),
+                                prefixIcon: const Icon(Icons.location_on_rounded, color: Color(0xFF1976D2)),
                                 filled: true,
                                 fillColor: Colors.grey[100],
                               ),
@@ -334,7 +334,7 @@ class _AgentRequestScreenState extends State<AgentRequestScreen> with TickerProv
                               decoration: InputDecoration(
                                 labelText: 'Phone Number',
                                 border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-                                prefixIcon: const Icon(Icons.phone_rounded, color: Color(0xFF6A11CB)),
+                                prefixIcon: const Icon(Icons.phone_rounded, color: Color(0xFF1976D2)),
                                 filled: true,
                                 fillColor: Colors.grey[100],
                               ),
@@ -355,7 +355,7 @@ class _AgentRequestScreenState extends State<AgentRequestScreen> with TickerProv
                               decoration: InputDecoration(
                                 labelText: 'Experience (Years)',
                                 border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-                                prefixIcon: const Icon(Icons.work_rounded, color: Color(0xFF6A11CB)),
+                                prefixIcon: const Icon(Icons.work_rounded, color: Color(0xFF1976D2)),
                                 filled: true,
                                 fillColor: Colors.grey[100],
                               ),
@@ -376,7 +376,7 @@ class _AgentRequestScreenState extends State<AgentRequestScreen> with TickerProv
                               decoration: InputDecoration(
                                 labelText: 'Specialization',
                                 border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-                                prefixIcon: const Icon(Icons.star_rounded, color: Color(0xFF6A11CB)),
+                                prefixIcon: const Icon(Icons.star_rounded, color: Color(0xFF1976D2)),
                                 filled: true,
                                 fillColor: Colors.grey[100],
                               ),
@@ -422,7 +422,7 @@ class _AgentRequestScreenState extends State<AgentRequestScreen> with TickerProv
                                       }
                                     });
                                   },
-                                  activeColor: const Color(0xFF6A11CB),
+                                  activeColor: const Color(0xFF1976D2),
                                 ),
                                 Expanded(
                                   child: GestureDetector(
@@ -430,7 +430,7 @@ class _AgentRequestScreenState extends State<AgentRequestScreen> with TickerProv
                                     child: const Text(
                                       'I agree to the Terms and Conditions',
                                       style: TextStyle(
-                                        color: Color(0xFF6A11CB),
+                                        color: Color(0xFF1976D2),
                                         fontSize: 14,
                                         decoration: TextDecoration.underline,
                                       ),
@@ -450,7 +450,7 @@ class _AgentRequestScreenState extends State<AgentRequestScreen> with TickerProv
                                   style: const TextStyle(fontSize: 16),
                                 ),
                                 style: ElevatedButton.styleFrom(
-                                  backgroundColor: const Color(0xFF6A11CB),
+                                  backgroundColor: const Color(0xFF1976D2),
                                   foregroundColor: Colors.white,
                                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                                   padding: const EdgeInsets.symmetric(vertical: 16),

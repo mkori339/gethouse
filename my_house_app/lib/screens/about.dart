@@ -41,7 +41,7 @@ class ContactScreen extends StatelessWidget {
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
             colors: [
-              const Color.fromARGB(255, 176, 30, 229).withOpacity(0.8),
+              const Color(0xFF1976D2).withOpacity(0.8),
               _deepBlue.withOpacity(0.6),
               Colors.white.withOpacity(0.9),
             ],

@@ -108,7 +108,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Ticker
           ElevatedButton(
             onPressed: () => Navigator.pop(context, true),
             style: ElevatedButton.styleFrom(
-              backgroundColor: newStatus ? const Color(0xFF6A11CB) : const Color(0xFFE53E3E),
+              backgroundColor: newStatus ? const Color(0xFF1976D2) : const Color(0xFFE53E3E),
               foregroundColor: Colors.white,
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
             ),
@@ -129,7 +129,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Ticker
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Registrations ${newStatus ? 'opened' : 'closed'} successfully! 🎉'),
-            backgroundColor: const Color(0xFF6A11CB),
+            backgroundColor: const Color(0xFF1976D2),
             duration: const Duration(seconds: 3),
             behavior: SnackBarBehavior.floating,
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -193,7 +193,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Ticker
             gradient: LinearGradient(
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
-              colors: [Color(0xFF6A11CB), Color(0xFF2575FC)],
+              colors: [Color(0xFF1976D2), Color(0xFF2575FC)],
             ),
           ),
         ),
@@ -226,7 +226,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Ticker
         child: _loading
             ? const Center(
                 child: CircularProgressIndicator(
-                  valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF6A11CB)),
+                  valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF1976D2)),
                 ),
               )
             : _error != null
@@ -273,7 +273,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Ticker
                             icon: const Icon(Iconsax.refresh, size: 20),
                             label: const Text('Try Again'),
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: const Color(0xFF6A11CB),
+                              backgroundColor: const Color(0xFF1976D2),
                               foregroundColor: Colors.white,
                               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                               padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
@@ -388,7 +388,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Ticker
                               _buildActionButton(
                                 label: 'Unpaid Posts',
                                 icon: Iconsax.receipt,
-                                color: const Color(0xFF6A11CB),
+                                color: const Color(0xFF1976D2),
                                 onPressed: _openUnpaidPosts,
                                 tooltip: 'View unpaid posts',
                                 delay: 1000.ms,
@@ -396,7 +396,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Ticker
                               _buildActionButton(
                                 label: 'Unpaid Agents',
                                 icon: Iconsax.profile_2user,
-                                color: const Color(0xFF6A11CB),
+                                color: const Color(0xFF1976D2),
                                 onPressed: _openUnpaidAgents,
                                 tooltip: 'View unpaid agents',
                                 delay: 1100.ms,
@@ -404,7 +404,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Ticker
                               _buildActionButton(
                                 label: 'Manage Users',
                                 icon: Iconsax.people,
-                                color: const Color(0xFF6A11CB),
+                                color: const Color(0xFF1976D2),
                                 onPressed: _openManageUsers,
                                 tooltip: 'Manage user accounts',
                                 delay: 1200.ms,
@@ -412,7 +412,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Ticker
                               _buildActionButton(
                                 label: 'View Reports',
                                 icon: Iconsax.chart,
-                                color: const Color(0xFF6A11CB),
+                                color: const Color(0xFF1976D2),
                                 onPressed: _viewReport,
                                 tooltip: 'View system reports',
                                 delay: 1300.ms,

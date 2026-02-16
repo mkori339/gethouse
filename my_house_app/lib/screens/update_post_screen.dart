@@ -312,7 +312,7 @@ class _UpdatePostScreenState extends State<UpdatePostScreen> with SingleTickerPr
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: const Text('Post updated successfully'),
-            backgroundColor: const Color(0xFF6A11CB),
+            backgroundColor: const Color(0xFF1976D2),
             duration: const Duration(seconds: 3),
             behavior: SnackBarBehavior.floating,
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -387,7 +387,7 @@ class _UpdatePostScreenState extends State<UpdatePostScreen> with SingleTickerPr
             gradient: LinearGradient(
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
-              colors: [Color(0xFF6A11CB), Color(0xFF2575FC)],
+              colors: [Color(0xFF1976D2), Color(0xFF2575FC)],
             ),
           ),
         ),
@@ -447,7 +447,7 @@ class _UpdatePostScreenState extends State<UpdatePostScreen> with SingleTickerPr
             : _loading
                 ? const Center(
                     child: CircularProgressIndicator(
-                      valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF6A11CB)),
+                      valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF1976D2)),
                     ),
                   )
                 : FadeTransition(
@@ -626,8 +626,8 @@ class _UpdatePostScreenState extends State<UpdatePostScreen> with SingleTickerPr
                                     ).copyWith(
                                       backgroundColor: MaterialStateProperty.resolveWith<Color>(
                                         (states) => states.contains(MaterialState.hovered)
-                                            ? const Color(0xFF6A11CB).withOpacity(0.9)
-                                            : const Color(0xFF6A11CB),
+                                            ? const Color(0xFF1976D2).withOpacity(0.9)
+                                            : const Color(0xFF1976D2),
                                       ),
                                     ),
                                   ),
@@ -727,7 +727,7 @@ class _UpdatePostScreenState extends State<UpdatePostScreen> with SingleTickerPr
                                           child: Stack(
                                             children: [
                                               CachedNetworkImage(
-                                                imageUrl: 'https://sever.mikangaula.store/api/storage/$path',
+                                                imageUrl: 'https://sever.mkori.online/api/storage/$path',
                                                 fit: BoxFit.cover,
                                                 placeholder: (context, url) => Container(
                                                   decoration: BoxDecoration(
@@ -737,7 +737,7 @@ class _UpdatePostScreenState extends State<UpdatePostScreen> with SingleTickerPr
                                                   child: const Center(
                                                     child: CircularProgressIndicator(
                                                       strokeWidth: 2,
-                                                      valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF6A11CB)),
+                                                      valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF1976D2)),
                                                     ),
                                                   ),
                                                 ),
@@ -843,8 +843,8 @@ class _UpdatePostScreenState extends State<UpdatePostScreen> with SingleTickerPr
                                           ).copyWith(
                                             backgroundColor: MaterialStateProperty.resolveWith<Color>(
                                               (states) => states.contains(MaterialState.hovered)
-                                                  ? const Color(0xFF6A11CB).withOpacity(0.9)
-                                                  : const Color(0xFF6A11CB),
+                                                  ? const Color(0xFF1976D2).withOpacity(0.9)
+                                                  : const Color(0xFF1976D2),
                                             ),
                                           ),
                                         ),
@@ -877,14 +877,14 @@ class _UpdatePostScreenState extends State<UpdatePostScreen> with SingleTickerPr
       decoration: InputDecoration(
         labelText: label,
         labelStyle: const TextStyle(
-          color: Color(0xFF6A11CB),
+          color: Color(0xFF1976D2),
           fontWeight: FontWeight.w600,
         ),
-        prefixIcon: Icon(icon, color: const Color(0xFF6A11CB)),
+        prefixIcon: Icon(icon, color: const Color(0xFF1976D2)),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
           borderSide: const BorderSide(
-            color: Color(0xFF6A11CB),
+            color: Color(0xFF1976D2),
             width: 1.5,
           ),
         ),
@@ -898,7 +898,7 @@ class _UpdatePostScreenState extends State<UpdatePostScreen> with SingleTickerPr
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
           borderSide: const BorderSide(
-            color: Color(0xFF6A11CB),
+            color: Color(0xFF1976D2),
             width: 2,
           ),
         ),
@@ -927,7 +927,7 @@ class _UpdatePostScreenState extends State<UpdatePostScreen> with SingleTickerPr
         fontSize: isLargeScreen ? 16 : 14,
         color: const Color(0xFF1A202C),
       ),
-      cursorColor: const Color(0xFF6A11CB),
+      cursorColor: const Color(0xFF1976D2),
     );
   }
   

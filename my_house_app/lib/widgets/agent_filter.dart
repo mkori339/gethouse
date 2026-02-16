@@ -54,7 +54,7 @@ class _AgentFilterState extends State<AgentFilter> {
               Navigator.pop(context);
             },
             style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFF6A11CB),
+              backgroundColor: const Color(0xFF1976D2),
               foregroundColor: Colors.white,
               padding: const EdgeInsets.symmetric(vertical: 16),
             ),

@@ -150,7 +150,7 @@ class _AdminUnpaidPostsScreenState extends State<AdminUnpaidPostsScreen> with Ti
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: const Text('Post verified successfully'),
-            backgroundColor: const Color(0xFF6A11CB),
+            backgroundColor: const Color(0xFF1976D2),
             duration: const Duration(seconds: 3),
             behavior: SnackBarBehavior.floating,
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -233,7 +233,7 @@ class _AdminUnpaidPostsScreenState extends State<AdminUnpaidPostsScreen> with Ti
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: const Text('Post deleted successfully'),
-            backgroundColor: const Color(0xFF6A11CB),
+            backgroundColor: const Color(0xFF1976D2),
             duration: const Duration(seconds: 3),
             behavior: SnackBarBehavior.floating,
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -414,7 +414,7 @@ class _AdminUnpaidPostsScreenState extends State<AdminUnpaidPostsScreen> with Ti
                 spacing: 8,
                 children: [
                   IconButton(
-                    icon: const Icon(Icons.info_outline_rounded, color: Color(0xFF6A11CB)),
+                    icon: const Icon(Icons.info_outline_rounded, color: Color(0xFF1976D2)),
                     onPressed: () => _viewPostDetails(id),
                     tooltip: 'View Details',
                   ),
@@ -480,7 +480,7 @@ class _AdminUnpaidPostsScreenState extends State<AdminUnpaidPostsScreen> with Ti
             gradient: LinearGradient(
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
-              colors: [Color(0xFF6A11CB), Color(0xFF2575FC)],
+              colors: [Color(0xFF1976D2), Color(0xFF2575FC)],
             ),
           ),
         ),
@@ -496,7 +496,7 @@ class _AdminUnpaidPostsScreenState extends State<AdminUnpaidPostsScreen> with Ti
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: _fetch,
-        backgroundColor: const Color(0xFF6A11CB),
+        backgroundColor: const Color(0xFF1976D2),
         foregroundColor: Colors.white,
         tooltip: 'Refresh Posts',
         child: const Icon(Icons.refresh_rounded),
@@ -512,7 +512,7 @@ class _AdminUnpaidPostsScreenState extends State<AdminUnpaidPostsScreen> with Ti
         child: _loading
             ? const Center(
                 child: CircularProgressIndicator(
-                  valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF6A11CB)),
+                  valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF1976D2)),
                 ),
               )
             : FadeTransition(
@@ -540,10 +540,10 @@ class _AdminUnpaidPostsScreenState extends State<AdminUnpaidPostsScreen> with Ti
                           controller: _searchController,
                           decoration: InputDecoration(
                             hintText: 'Search posts by category, poster, or region',
-                            prefixIcon: const Icon(Icons.search_rounded, color: Color(0xFF6A11CB)),
+                            prefixIcon: const Icon(Icons.search_rounded, color: Color(0xFF1976D2)),
                             suffixIcon: _search.isNotEmpty
                                 ? IconButton(
-                                    icon: const Icon(Icons.clear_rounded, color: Color(0xFF6A11CB)),
+                                    icon: const Icon(Icons.clear_rounded, color: Color(0xFF1976D2)),
                                     onPressed: () {
                                       setState(() {
                                         _search = '';
@@ -554,7 +554,7 @@ class _AdminUnpaidPostsScreenState extends State<AdminUnpaidPostsScreen> with Ti
                                 : null,
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(16),
-                              borderSide: const BorderSide(color: Color(0xFF6A11CB), width: 1.5),
+                              borderSide: const BorderSide(color: Color(0xFF1976D2), width: 1.5),
                             ),
                             enabledBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(16),
@@ -562,7 +562,7 @@ class _AdminUnpaidPostsScreenState extends State<AdminUnpaidPostsScreen> with Ti
                             ),
                             focusedBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(16),
-                              borderSide: const BorderSide(color: Color(0xFF6A11CB), width: 2),
+                              borderSide: const BorderSide(color: Color(0xFF1976D2), width: 2),
                             ),
                             filled: true,
                             fillColor: Colors.white,
@@ -575,7 +575,7 @@ class _AdminUnpaidPostsScreenState extends State<AdminUnpaidPostsScreen> with Ti
                             fontSize: isLargeScreen ? 16 : 14,
                             color: const Color(0xFF1A202C),
                           ),
-                          cursorColor: const Color(0xFF6A11CB),
+                          cursorColor: const Color(0xFF1976D2),
                         ),
                       ),
                       const SizedBox(height: 16),
@@ -612,7 +612,7 @@ class _AdminUnpaidPostsScreenState extends State<AdminUnpaidPostsScreen> with Ti
                                         icon: const Icon(Icons.refresh_rounded, size: 20),
                                         label: const Text('Try Again'),
                                         style: ElevatedButton.styleFrom(
-                                          backgroundColor: const Color(0xFF6A11CB),
+                                          backgroundColor: const Color(0xFF1976D2),
                                           foregroundColor: Colors.white,
                                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                                           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
@@ -631,7 +631,7 @@ class _AdminUnpaidPostsScreenState extends State<AdminUnpaidPostsScreen> with Ti
                                   )
                                 : RefreshIndicator(
                                     onRefresh: _fetch,
-                                    color: const Color(0xFF6A11CB),
+                                    color: const Color(0xFF1976D2),
                                     child: isLargeScreen
                                         ? GridView.builder(
                                             gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(

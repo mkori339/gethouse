@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/animation.dart';
 import 'package:iconsax/iconsax.dart';
-import 'package:my_house_app/widgets/app_drawer.dart';
+
 
 class NavBar extends StatefulWidget implements PreferredSizeWidget {
   const NavBar({super.key});
@@ -102,14 +102,14 @@ class _NavBarState extends State<NavBar> with TickerProviderStateMixin {
           duration: const Duration(milliseconds: 300),
           decoration: BoxDecoration(
             gradient: const LinearGradient(
-              colors: [Color(0xFF6A11CB), Color(0xFF2575FC)],
+              colors: [Color(0xFF1976D2), Color(0xFF2575FC)],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
             borderRadius: BorderRadius.circular(25),
             boxShadow: [
               BoxShadow(
-                color: const Color(0xFF6A11CB).withOpacity(0.4),
+                color: const Color(0xFF1976D2).withOpacity(0.4),
                 blurRadius: 10,
                 offset: const Offset(0, 4),
                 spreadRadius: 1,
@@ -209,8 +209,12 @@ class _NavBarState extends State<NavBar> with TickerProviderStateMixin {
 
     return Container(
       decoration: BoxDecoration(
+        borderRadius: const BorderRadius.only(
+          topRight: Radius.circular(0),
+          bottomRight: Radius.circular(0),
+        ),
         gradient: LinearGradient(
-          colors: const [Color(0xFF6A11CB), Color(0xFF2575FC)],
+          colors: const [Color(0xFF1976D2), Color(0xFF2575FC)],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           stops: const [0.0, 0.8],

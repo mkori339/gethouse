@@ -65,7 +65,7 @@ class AboutScreen extends StatelessWidget {
         ShaderMask(
           blendMode: BlendMode.srcIn,
           shaderCallback: (bounds) => const LinearGradient(
-            colors: [Color(0xFF0077B6), Color(0xFF00B4D8)],
+            colors: [Color(0xFF1976D2), Color(0xFF00B4D8)],
           ).createShader(bounds),
           child: Text(
             'About Gethouse 🏠',
@@ -180,7 +180,7 @@ class AboutScreen extends StatelessWidget {
         gradient: const LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [Color(0xFF0077B6), Color(0xFF00B4D8)],
+          colors: [Color(0xFF1976D2), const Color(0xFF0077B6)],
         ),
         borderRadius: BorderRadius.circular(20),
         boxShadow: [

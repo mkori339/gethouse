@@ -19,20 +19,23 @@ class PreviewScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final imageHeight = MediaQuery.of(context).size.width > 600 ? 450.0 : 350.0;
     final isDesktop = MediaQuery.of(context).size.width > 800;
+    final primary = Theme.of(context).colorScheme.primary;
+    final secondary = Theme.of(context).colorScheme.secondary;
+    final scaffoldBg = Theme.of(context).scaffoldBackgroundColor;
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFD),
+      backgroundColor: scaffoldBg, // <-- use theme scaffold background
       appBar: AppBar(
         title: const Text(
           'Property Details 🏠',
           style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
         ),
         flexibleSpace: Container(
-          decoration: const BoxDecoration(
+          decoration: BoxDecoration(
             gradient: LinearGradient(
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
-              colors: [Color(0xFF6A11CB), Color(0xFF2575FC)],
+              colors: [primary, secondary], // <-- use theme colors
             ),
           ),
         ),
@@ -40,7 +43,7 @@ class PreviewScreen extends StatelessWidget {
         elevation: 0,
         actions: [
           IconButton(
-            icon: const Icon(Iconsax.share, size: 24),
+            icon: Icon(Iconsax.share, size: 24, color: Colors.white),
             onPressed: () => _shareProperty(context),
             tooltip: 'Share Property',
           )
@@ -63,9 +66,9 @@ class PreviewScreen extends StatelessWidget {
                       final img = post.images[index];
                       final imagePath = img['path']?.toString() ?? '';
                       // NOTE: Change 127.0.0.1 to your server IP for testing on a real device/emulator.
-                      final imageUrl = 'https://sever.mikangaula.store/api/storage/$imagePath';
+                      final imageUrl = 'https://sever.mkori.online/api/storage/$imagePath';
                       return Hero(
-                        tag: 'property-image-${post.id}-$index',
+                        tag: 'property-image-${post.id}-$imagePath',
                         child: CachedNetworkImage(
                           imageUrl: imageUrl,
                           fit: BoxFit.cover,
@@ -77,7 +80,7 @@ class PreviewScreen extends StatelessWidget {
                             ),
                             child: Center(
                               child: CircularProgressIndicator(
-                                valueColor: AlwaysStoppedAnimation<Color>(const Color(0xFF6A11CB)),
+                                valueColor: AlwaysStoppedAnimation<Color>(primary),
                               ),
                             ),
                           ),
@@ -162,12 +165,12 @@ class PreviewScreen extends StatelessWidget {
                               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                               decoration: BoxDecoration(
                                 gradient: const LinearGradient(
-                                  colors: [Color(0xFF6A11CB), Color(0xFF2575FC)],
+                                  colors: [Color(0xFF1976D2), Color(0xFF2575FC)],
                                 ),
                                 borderRadius: BorderRadius.circular(16),
                                 boxShadow: [
                                   BoxShadow(
-                                    color: const Color(0xFF6A11CB).withOpacity(0.3),
+                                    color: const Color(0xFF1976D2).withOpacity(0.3),
                                     blurRadius: 10,
                                     offset: const Offset(0, 4),
                                   ),
@@ -312,7 +315,7 @@ class PreviewScreen extends StatelessWidget {
                           decoration: const BoxDecoration(
                             shape: BoxShape.circle,
                             gradient: LinearGradient(
-                              colors: [Color(0xFF6A11CB), Color(0xFF2575FC)],
+                              colors: [Color(0xFF1976D2), Color(0xFF2575FC)],
                             ),
                           ),
                           child: const Icon(Iconsax.user, color: Colors.white, size: 28),
@@ -340,7 +343,7 @@ class PreviewScreen extends StatelessWidget {
                         ),
                         if (post.user['phone'] != null)
                           IconButton(
-                            icon: const Icon(Iconsax.message, color: Color(0xFF6A11CB), size: 28),
+                            icon: const Icon(Iconsax.message, color: Color(0xFF1976D2), size: 28),
                             onPressed: () => _launchWhatsApp(context, post.user['phone']),
                             tooltip: 'Contact via WhatsApp',
                           )
@@ -377,7 +380,7 @@ class PreviewScreen extends StatelessWidget {
       
       child: Row(
         children: [
-          Icon(icon, color: const Color(0xFF6A11CB), size: 20),
+          Icon(icon, color: const Color(0xFF1976D2), size: 20),
           const SizedBox(width: 8),
           Expanded(
             child: Column(
@@ -501,46 +504,48 @@ class _CommentsScreenState extends State<CommentsScreen> {
       });
     } catch (e) {
       debugPrint("Error posting comment: $e");
-    ScaffoldMessenger.of(context).showSnackBar(
-  SnackBar(
-    // 1. Attractive Styling
-    content: Row(
-      children: [
-        const Icon(
-          Iconsax.warning_2, // Using Iconsax for a modern, clear icon
-          color: Colors.white,
-          size: 24,
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Text('Please log in to comment'),
+          backgroundColor: const Color(0xFFF97316),
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         ),
-        const SizedBox(width: 12),
-        const Expanded(
-          child: Text(
-            'Please log in to comment',
-            style: TextStyle(
-              color: Colors.white,
-              fontWeight: FontWeight.w600, // Make the text stand out
-            ),
-          ),
-        ),
-      ],
-    ),
-    
-    // 2. Color and Elevation
-    backgroundColor: const Color(0xFFF97316), // A slightly deeper, modern Orange/Amber
-    behavior: SnackBarBehavior.floating,
-    margin: EdgeInsets.symmetric(horizontal: 24, vertical: 16), // Creates a narrow, non-wide 'dive'
-    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-    
-    // 3. Rounded Shape
-    shape: RoundedRectangleBorder(
-      borderRadius: BorderRadius.circular(16), // Increased border radius
-    ),
-    
-    // 4. Subtle, Non-Wide Animation
-    duration: const Duration(seconds: 3),
-  ),
-);
+      );
     } finally {
       setState(() => _posting = false);
+    }
+  }
+
+  Future<void> _deleteComment(int commentId) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Delete comment'),
+        content: const Text('Are you sure you want to delete this comment?'),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Cancel')),
+          TextButton(onPressed: () => Navigator.pop(context, true), child: const Text('Delete')),
+        ],
+      ),
+    );
+
+    if (confirmed != true) return;
+
+    try {
+      // Try common endpoints; adjust if your API differs.
+      await ApiService.delete('/api/comments/$commentId');
+      setState(() {
+        _comments.removeWhere((c) => c.id == commentId);
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: const Text('Comment deleted'), backgroundColor: Colors.green[600]),
+      );
+    } catch (e) {
+      debugPrint('Delete failed: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: const Text('Failed to delete comment'), backgroundColor: Colors.red[400]),
+      );
     }
   }
 
@@ -553,17 +558,20 @@ class _CommentsScreenState extends State<CommentsScreen> {
   @override
   Widget build(BuildContext context) {
     final isDesktop = MediaQuery.of(context).size.width > 800;
+    final primary = Theme.of(context).colorScheme.primary;
+    final scaffoldBg = Theme.of(context).scaffoldBackgroundColor;
+    final currentUserId = AuthService.getUserId();
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFD),
+      backgroundColor: scaffoldBg, // <-- theme background
       appBar: AppBar(
         title: const Text('Comments 💬', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24)),
         flexibleSpace: Container(
-          decoration: const BoxDecoration(
+          decoration: BoxDecoration(
             gradient: LinearGradient(
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
-              colors: [Color(0xFF6A11CB), Color(0xFF2575FC)],
+              colors: [primary, Theme.of(context).colorScheme.secondary],
             ),
           ),
         ),
@@ -574,9 +582,9 @@ class _CommentsScreenState extends State<CommentsScreen> {
         children: [
           Expanded(
             child: _loading
-                ? const Center(
+                ? Center(
               child: CircularProgressIndicator(
-                valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF6A11CB)),
+                valueColor: AlwaysStoppedAnimation<Color>(primary),
               ),
             )
                 : _comments.isEmpty
@@ -584,7 +592,7 @@ class _CommentsScreenState extends State<CommentsScreen> {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const Icon(Iconsax.messages, size: 64, color: Color(0xFF6A11CB)),
+                  Icon(Iconsax.messages, size: 64, color: primary),
                   const SizedBox(height: 16),
                   Text(
                     'No comments yet',
@@ -606,6 +614,10 @@ class _CommentsScreenState extends State<CommentsScreen> {
               itemCount: _comments.length,
               itemBuilder: (context, index) {
                 final comment = _comments[index];
+                final commenterName = (comment.userName != null && comment.userName!.isNotEmpty) ? comment.userName! : 'User';
+                final commenterInitial = commenterName.isNotEmpty ? commenterName[0].toUpperCase() : 'U';
+                final isOwner = (comment.userId != null && comment.userId == currentUserId);
+
                 return Container(
                   margin: const EdgeInsets.only(bottom: 16),
                   padding: const EdgeInsets.all(16),
@@ -625,9 +637,9 @@ class _CommentsScreenState extends State<CommentsScreen> {
                     children: [
                       CircleAvatar(
                         radius: 24,
-                        backgroundColor: const Color(0xFF6A11CB),
+                        backgroundColor: primary,
                         child: Text(
-                          comment.userName.isNotEmpty ? comment.userName[0].toUpperCase() : 'U',
+                          commenterInitial,
                           style: const TextStyle(
                             color: Colors.white,
                             fontWeight: FontWeight.bold,
@@ -643,20 +655,34 @@ class _CommentsScreenState extends State<CommentsScreen> {
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Text(
-                                  comment.userName,
-                                  style: const TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w600,
-                                    color: Color(0xFF1A202C),
+                                Expanded(
+                                  child: Text(
+                                    commenterName,
+                                    style: const TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w600,
+                                      color: Color(0xFF1A202C),
+                                    ),
                                   ),
                                 ),
-                                Text(
-                                  DateFormat('MMM dd, yyyy').format(comment.createdAt),
-                                  style: TextStyle(
-                                    fontSize: 12,
-                                    color: Colors.grey[600],
-                                  ),
+                                Row(
+                                  children: [
+                                    Text(
+                                      DateFormat('MMM dd, yyyy').format(comment.createdAt),
+                                      style: TextStyle(
+                                        fontSize: 12,
+                                        color: Colors.grey[600],
+                                      ),
+                                    ),
+                                    if (isOwner) ...[
+                                      const SizedBox(width: 8),
+                                      IconButton(
+                                        tooltip: 'Delete comment',
+                                        icon: Icon(Iconsax.trash, color: Colors.red[400], size: 20),
+                                        onPressed: () => _deleteComment(comment.id),
+                                      ),
+                                    ],
+                                  ],
                                 ),
                               ],
                             ),
@@ -707,7 +733,7 @@ class _CommentsScreenState extends State<CommentsScreen> {
                       filled: true,
                       fillColor: Colors.grey[100],
                       contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-                      prefixIcon: const Icon(Iconsax.message, color: Color(0xFF6A11CB)),
+                      prefixIcon: Icon(Iconsax.message, color: primary),
                     ),
                     maxLines: null,
                   ),
@@ -715,10 +741,15 @@ class _CommentsScreenState extends State<CommentsScreen> {
                 const SizedBox(width: 12),
                 FloatingActionButton(
                   onPressed: _posting ? null : _addComment,
-                  backgroundColor: const Color(0xFF6A11CB),
+                  backgroundColor: primary,
                   child: _posting
-                      ? const CircularProgressIndicator(
-                    valueColor: AlwaysStoppedAnimation(Colors.white),
+                      ? SizedBox(
+                    height: 20,
+                    width: 20,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      valueColor: AlwaysStoppedAnimation(Colors.white),
+                    ),
                   )
                       : const Icon(Iconsax.send_2, color: Colors.white),
                 ),
@@ -765,9 +796,26 @@ class _HouseCardState extends State<HouseCard> {
 
       setState(() {
         _likesCount = likesResp['count'] ?? 0;
-        final users = likesResp['users'] ?? [];
+        final usersData = likesResp['users'] ?? likesResp;
+        final List users = usersData is List ? usersData : [];
+
         _likedByMe = users.any((u) {
-          if (u is Map && (u['is_current'] == true || u['id'] == AuthService.getUserId())) return true;
+          try {
+            if (u is Map) {
+              if (u['is_current'] == true) return true;
+              final uid = u['user_id'] ?? u['userId'];
+              return uid != null && uid == AuthService.getUserId();
+            } else {
+              final dyn = u as dynamic;
+              final uid = dyn.userId ?? dyn.user_id;
+              return uid != null && uid == AuthService.getUserId();
+            }
+          } catch (_) {
+            return false;
+          }
+        });
+        _likedByMe = users.any((u) {
+          if (u is Map && (u['is_current'] == true || u['user_id'] == AuthService.getUserId())) return true;
           return false;
         });
         _commentsCount = loadedComments.length; // Set the new comment count
@@ -783,23 +831,13 @@ class _HouseCardState extends State<HouseCard> {
     try {
       await ApiService.postJson('/api/posts/${widget.post.id}/like', {});
       await _loadPostStats(); // Use the new function
-      //  ScaffoldMessenger.of(context).showSnackBar(
-      //   SnackBar(
-      //     content: Text(_likedByMe ? 'Like removed' : 'Like added!'), 
-      //     backgroundColor: Colors.green[400],
-      //     behavior: SnackBarBehavior.floating,
-      //     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      //   ),
-      // );
     } catch (e) {
-    
        ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-    // 1. Attractive Styling
     content: Row(
       children: [
         const Icon(
-          Iconsax.warning_2, // Using Iconsax for a modern, clear icon
+          Iconsax.warning_2,
           color: Colors.white,
           size: 24,
         ),
@@ -809,25 +847,19 @@ class _HouseCardState extends State<HouseCard> {
             'Please login to like',
             style: TextStyle(
               color: Colors.white,
-              fontWeight: FontWeight.w600, // Make the text stand out
+              fontWeight: FontWeight.w600,
             ),
           ),
         ),
       ],
     ),
-    
-    // 2. Color and Elevation
-    backgroundColor: const Color(0xFFF97316), // A slightly deeper, modern Orange/Amber
+    backgroundColor: const Color(0xFFF97316),
     behavior: SnackBarBehavior.floating,
-    margin: EdgeInsets.symmetric(horizontal: 24, vertical: 16), // Creates a narrow, non-wide 'dive'
+    margin: EdgeInsets.symmetric(horizontal: 24, vertical: 16),
     padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-    
-    // 3. Rounded Shape
     shape: RoundedRectangleBorder(
-      borderRadius: BorderRadius.circular(16), // Increased border radius
+      borderRadius: BorderRadius.circular(16),
     ),
-    
-    // 4. Subtle, Non-Wide Animation
     duration: const Duration(seconds: 3),
   ),
 );
@@ -840,11 +872,10 @@ class _HouseCardState extends State<HouseCard> {
       
         ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-    // 1. Attractive Styling
     content: Row(
       children: [
         const Icon(
-          Iconsax.warning_2, // Using Iconsax for a modern, clear icon
+          Iconsax.warning_2,
           color: Colors.white,
           size: 24,
         ),
@@ -854,25 +885,19 @@ class _HouseCardState extends State<HouseCard> {
             'Report submitted successfully',
             style: TextStyle(
               color: Colors.white,
-              fontWeight: FontWeight.w600, // Make the text stand out
+              fontWeight: FontWeight.w600,
             ),
           ),
         ),
       ],
     ),
-    
-    // 2. Color and Elevation
-    backgroundColor: const Color(0xFFF97316), // A slightly deeper, modern Orange/Amber
+    backgroundColor: const Color(0xFFF97316),
     behavior: SnackBarBehavior.floating,
-    margin: EdgeInsets.symmetric(horizontal: 24, vertical: 16), // Creates a narrow, non-wide 'dive'
+    margin: EdgeInsets.symmetric(horizontal: 24, vertical: 16),
     padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-    
-    // 3. Rounded Shape
     shape: RoundedRectangleBorder(
-      borderRadius: BorderRadius.circular(16), // Increased border radius
+      borderRadius: BorderRadius.circular(16),
     ),
-    
-    // 4. Subtle, Non-Wide Animation
     duration: const Duration(seconds: 3),
   ),
 );
@@ -892,8 +917,7 @@ class _HouseCardState extends State<HouseCard> {
   Widget build(BuildContext context) {
     final post = widget.post;
     final img = post.images.isNotEmpty ? post.images[0]['path']?.toString() : null;
-    // NOTE: Change 127.0.0.1 to your server IP for testing on a real device/emulator.
-    final imgUrl = img != null ? 'https://sever.mikangaula.store/api/storage/$img' : null;
+    final imgUrl = img != null ? 'https://sever.mkori.online/api/storage/$img' : null;
     final formattedAmount = NumberFormat('#,##0').format(post.amount);
     final formattedDate = DateFormat('MMM dd, yyyy').format(post.createdAt);
     final maxExplanationLength = 120;
@@ -902,18 +926,23 @@ class _HouseCardState extends State<HouseCard> {
         : post.street;
 
     final screenWidth = MediaQuery.of(context).size.width;
+    final isMobile = screenWidth < 800;
     final double cardMaxWidth = screenWidth > 1000 ? 900 : (screenWidth > 800 ? 700 : double.infinity);
+
+    // Theme colors used in this widget
+    final primary = Theme.of(context).colorScheme.primary;
+    final secondary = Theme.of(context).colorScheme.secondary;
 
     return Center(
       child: SizedBox(
         width: cardMaxWidth,
-        // height: Card.outlined().borderOnForeground, // Removed invalid assignment
         child: Card(
           elevation: 6,
-          margin: const EdgeInsets.symmetric(vertical: 12, horizontal: 12),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          color: const Color(0xFF1976D2), // <-- card uses theme primary tint now
+          margin: EdgeInsets.symmetric(vertical: isMobile ? 6 : 12, horizontal: isMobile ? 4 : 12),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
           child: InkWell(
-            borderRadius: BorderRadius.circular(20),
+            borderRadius: BorderRadius.circular(16),
             onTap: () {
               Navigator.push(
                 context,
@@ -923,6 +952,7 @@ class _HouseCardState extends State<HouseCard> {
               );
             },
             child: Column(
+              mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 // Image section with AspectRatio for dynamic height (FIXED OVERFLOW)
@@ -934,32 +964,32 @@ class _HouseCardState extends State<HouseCard> {
                       child: Container(
                         decoration: BoxDecoration(
                           borderRadius: const BorderRadius.only(
-                            topLeft: Radius.circular(20),
-                            topRight: Radius.circular(20),
+                            topLeft: Radius.circular(16),
+                            topRight: Radius.circular(16),
                           ),
                           color: Colors.grey[200],
                         ),
                         child: imgUrl != null
                             ? ClipRRect(
                           borderRadius: const BorderRadius.only(
-                            topLeft: Radius.circular(20),
-                            topRight: Radius.circular(20),
+                            topLeft: Radius.circular(16),
+                            topRight: Radius.circular(16),
                           ),
                           child: Hero(
-                            tag: 'property-image-${post.id}',
-                            child: CachedNetworkImage(
-                              imageUrl: imgUrl,
-                              fit: BoxFit.cover,
-                              placeholder: (context, url) => const Center(
-                                child: CircularProgressIndicator(
-                                  valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF6A11CB)),
+                                tag: 'property-image-${post.id}-$img',
+                                child: CachedNetworkImage(
+                                  imageUrl: imgUrl,
+                                  fit: BoxFit.cover,
+                                  placeholder: (context, url) => Center(
+                                    child: CircularProgressIndicator(
+                                      valueColor: AlwaysStoppedAnimation<Color>(primary),
+                                    ),
+                                  ),
+                                  errorWidget: (context, url, error) => const Center(
+                                    child: Icon(Iconsax.gallery_slash, size: 50, color: Colors.grey),
+                                  ),
                                 ),
                               ),
-                              errorWidget: (context, url, error) => const Center(
-                                child: Icon(Iconsax.gallery_slash, size: 50, color: Colors.grey),
-                              ),
-                            ),
-                          ),
                         )
                             : const Center(
                           child: Icon(Iconsax.house, size: 50, color: Colors.grey),
@@ -970,20 +1000,23 @@ class _HouseCardState extends State<HouseCard> {
 
                     // Price/Type Badge
                     Positioned(
-                      top: 16,
-                      left: 16,
+                      top: isMobile ? 8 : 12,
+                      left: isMobile ? 8 : 12,
                       child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                        padding: EdgeInsets.symmetric(
+                          horizontal: isMobile ? 8 : 12,
+                          vertical: isMobile ? 4 : 5,
+                        ),
                         decoration: BoxDecoration(
-                          color: const Color(0xFF2575FC).withOpacity(0.9),
-                          borderRadius: BorderRadius.circular(10),
+                          color: secondary.withOpacity(0.9), // <-- theme
+                          borderRadius: BorderRadius.circular(8),
                         ),
                         child: Text(
                           post.type,
-                          style: const TextStyle(
+                          style: TextStyle(
                             color: Colors.white,
                             fontWeight: FontWeight.bold,
-                            fontSize: 14,
+                            fontSize: isMobile ? 11 : 13,
                           ),
                         ),
                       ),
@@ -991,28 +1024,31 @@ class _HouseCardState extends State<HouseCard> {
 
                     // Amount Badge
                     Positioned(
-                      bottom: 16,
-                      right: 16,
+                      bottom: isMobile ? 8 : 12,
+                      right: isMobile ? 8 : 12,
                       child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                        padding: EdgeInsets.symmetric(
+                          horizontal: isMobile ? 10 : 14,
+                          vertical: isMobile ? 4 : 6,
+                        ),
                         decoration: BoxDecoration(
-                          gradient: const LinearGradient(
-                            colors: [Color(0xFF6A11CB), Color(0xFF2575FC)],
+                          gradient: LinearGradient(
+                            colors: [primary, secondary], // <-- theme gradient
                           ),
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: BorderRadius.circular(10),
                           boxShadow: [
                             BoxShadow(
                               color: Colors.black.withOpacity(0.2),
-                              blurRadius: 10,
+                              blurRadius: 8,
                             ),
                           ],
                         ),
                         child: Text(
                           '$formattedAmount TSH',
-                          style: const TextStyle(
+                          style: TextStyle(
                             color: Colors.white,
                             fontWeight: FontWeight.bold,
-                            fontSize: 16,
+                            fontSize: isMobile ? 12 : 14,
                           ),
                         ),
                       ),
@@ -1022,33 +1058,36 @@ class _HouseCardState extends State<HouseCard> {
 
                 // Details Section
                 Padding(
-                  padding: const EdgeInsets.all(16.0),
+                  padding: EdgeInsets.all(isMobile ? 10 : 14),
                   child: Column(
+                    mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       // Title & Location
                       Text(
-                        '${post.category} - ${post.region}, ${post.district}',
-                        style: const TextStyle(
-                          fontSize: 20,
+                        '${post.category} - ${post.region}',
+                        style: TextStyle(
+                          fontSize: isMobile ? 14 : 18,
                           fontWeight: FontWeight.bold,
-                          color: Color(0xFF1A202C),
+                          color: Colors.white,
                         ),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
-                      const SizedBox(height: 8),
+                      const SizedBox(height: 4),
 
                       // Description
                       Text(
                         truncatedExplanation,
                         style: TextStyle(
-                          fontSize: 14,
-                          color: Colors.grey[600],
-                          height: 1.5,
+                          fontSize: isMobile ? 11 : 13,
+                          color: Colors.white70,
+                          height: 1.3,
                         ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                       ),
-                      const SizedBox(height: 16),
+                      const SizedBox(height: 10),
 
                       // Footer Actions & Stats
                       Row(
@@ -1061,23 +1100,23 @@ class _HouseCardState extends State<HouseCard> {
                                 onTap: _toggleLike,
                                 child: Icon(
                                   _likedByMe ? Iconsax.heart5 : Iconsax.heart,
-                                  size: 20,
-                                  color: _likedByMe ? Colors.redAccent : const Color(0xFF6A11CB),
+                                  size: isMobile ? 14 : 18,
+                                  color: _likedByMe ? Colors.white: const Color(0xFFDBD5D5), // <-- theme primary
                                 ),
                               ),
-                              const SizedBox(width: 6),
+                              const SizedBox(width: 3),
                               _loadingCounts
-                                  ? const SizedBox(
-                                height: 12,
-                                width: 12,
-                                child: CircularProgressIndicator(strokeWidth: 2, valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF6A11CB))),
+                                  ? SizedBox(
+                                height: 8,
+                                width: 8,
+                                child: CircularProgressIndicator(strokeWidth: 1.5, valueColor: AlwaysStoppedAnimation<Color>(Colors.white)),
                               )
                                   : Text(
                                 '${_likesCount}',
                                 style: TextStyle(
-                                  fontSize: 15,
+                                  fontSize: isMobile ? 10 : 12,
                                   fontWeight: FontWeight.w600,
-                                  color: Colors.grey[700],
+                                  color: Colors.white,
                                 ),
                               ),
                             ],
@@ -1097,20 +1136,20 @@ class _HouseCardState extends State<HouseCard> {
                                 },
                                 child: Row(
                                   children: [
-                                    const Icon(Iconsax.message_square, size: 20, color: Color(0xFF6A11CB)),
-                                    const SizedBox(width: 6),
+                                    Icon(Iconsax.message_square, size: isMobile ? 14 : 18, color: Colors.white),
+                                    const SizedBox(width: 3),
                                     _loadingCounts
-                                        ? const SizedBox(
-                                      height: 12,
-                                      width: 12,
-                                      child: CircularProgressIndicator(strokeWidth: 2, valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF6A11CB))),
+                                        ? SizedBox(
+                                      height: 8,
+                                      width: 8,
+                                      child: CircularProgressIndicator(strokeWidth: 1.5, valueColor: AlwaysStoppedAnimation<Color>(Colors.white)),
                                     )
                                         : Text(
                                       '${_commentsCount}',
                                       style: TextStyle(
-                                        fontSize: 15,
+                                        fontSize: isMobile ? 10 : 12,
                                         fontWeight: FontWeight.w600,
-                                        color: Colors.grey[700],
+                                        color: Colors.white,
                                       ),
                                     ),
                                   ],
@@ -1120,12 +1159,11 @@ class _HouseCardState extends State<HouseCard> {
                           ),
 
                           // Post Date
-
                           Text(
                             formattedDate,
                             style: TextStyle(
-                              fontSize: 13,
-                              color: Colors.grey[500],
+                              fontSize: isMobile ? 9 : 11,
+                              color: Colors.white70,
                             ),
                           ),
                         ],
@@ -1137,7 +1175,6 @@ class _HouseCardState extends State<HouseCard> {
             ),
           ),
         ),
-      ),
-    );
+    ),);
   }
 }

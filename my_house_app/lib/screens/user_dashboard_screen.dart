@@ -8,7 +8,7 @@ import '../models/agent.dart';
 import 'agent_details_screen.dart';
 
 // Define theme colors for uniformity
-const Color kPrimaryPurple = Color(0xFF6A11CB); // Main Purple from AppBar
+const Color kPrimaryPurple = Color(0xFF1976D2); // Main Purple from AppBar
 const Color kPrimaryBlue = Color(0xFF2575FC); // Main Blue from AppBar
 const Color kAccentColor = Color(0xFFFFC107); // A bright accent for highlights
 
@@ -147,7 +147,7 @@ class _UserDashboardScreenState extends State<UserDashboardScreen> with SingleTi
 
   void _logout() async {
     await AuthService.clearAuth();
-    NavigationService.navigateToReplacement('/login');
+    NavigationService.navigateToReplacement('/signin');
   }
 
   // MODIFICATION: Enhanced Action Button for visual appeal and animation

@@ -158,7 +158,7 @@ class _SignupScreenState extends State<SignupScreen> {
           gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
-            colors: [Color(0xFF6A11CB), Color(0xFF2575FC)],
+            colors: [Color(0xFF1976D2), Color(0xFF2575FC)],
           ),
         ),
         child: Center(
@@ -273,13 +273,13 @@ class _SignupScreenState extends State<SignupScreen> {
                                   _loading
                                       ? const Center(
                                           child: CircularProgressIndicator(
-                                            valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF6A11CB)),
+                                            valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF1976D2)),
                                           ),
                                         )
                                       : ElevatedButton(
                                           onPressed: _register,
                                           style: ElevatedButton.styleFrom(
-                                            backgroundColor: const Color(0xFF6A11CB),
+                                            backgroundColor: const Color(0xFF1976D2),
                                             foregroundColor: Colors.white,
                                             padding: const EdgeInsets.symmetric(vertical: 16,horizontal: 16),
                                             shape: RoundedRectangleBorder(
@@ -353,16 +353,16 @@ class _SignupScreenState extends State<SignupScreen> {
           borderSide: BorderSide.none,
         ),
         filled: true,
-        fillColor: Colors.grey[100],
+        fillColor: Colors.transparent,
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
           borderSide: BorderSide(color: Colors.grey[300]!),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: Color(0xFF6A11CB), width: 2),
+          borderSide: const BorderSide(color: Color(0xFF1976D2), width: 2),
         ),
-        floatingLabelStyle: const TextStyle(color: Color(0xFF6A11CB)),
+        floatingLabelStyle: const TextStyle(color: Color(0xFF1976D2)),
         errorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
           borderSide: BorderSide(color: Colors.red[400]!, width: 2.0),
@@ -386,7 +386,7 @@ class _SignupScreenState extends State<SignupScreen> {
           child: Text(
             linkText,
             style: const TextStyle(
-              color: Color(0xFF6A11CB),
+              color: Color(0xFF1976D2),
               fontWeight: FontWeight.bold,
             ),
           ),

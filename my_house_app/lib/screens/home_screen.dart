@@ -4,6 +4,7 @@ import '../widgets/house_search_filter.dart';
 import '../services/api_service.dart';
 import '../models/post.dart';
 import '../widgets/house_card.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -21,6 +22,7 @@ class _HomeScreenState extends State<HomeScreen> {
   int _currentPage = 1;
   bool _isLoadingMore = false;
   bool _hasMorePages = true;
+  
 
   @override
   void initState() {
@@ -99,7 +101,7 @@ class _HomeScreenState extends State<HomeScreen> {
         });
       }
     } catch (e) {
-      print('Error loading more posts: $e');
+      
     } finally {
       setState(() {
         _isLoadingMore = false;
@@ -179,23 +181,38 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isDesktop = MediaQuery.of(context).size.width > 800;
+
     return Scaffold(
       backgroundColor: const Color(0xFFF8FAFD),
       appBar: AppBar(
-        title: const Text(
-          'Discover Properties',
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            fontSize: 24,
-            letterSpacing: 0.5,
-          ),
-        ),
+        title: isDesktop
+            ? Center(
+              child: Text(
+                  'Discover Properties and get your dream home very fast in just few clicks and easy steps',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 24,
+                    letterSpacing: 0.5,
+                  ),
+                ),
+            )
+            : Center(
+              child: const Text(
+                  'Discover Properties',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 24,
+                    letterSpacing: 0.5,
+                  ),
+                ),
+            ),
         flexibleSpace: Container(
           decoration: const BoxDecoration(
             gradient: LinearGradient(
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
-              colors: [Color(0xFF6A11CB), Color(0xFF2575FC)],
+              colors: [const Color(0xFF1976D2), Color(0xFF2575FC)],
             ),
           ),
         ),
@@ -212,7 +229,7 @@ class _HomeScreenState extends State<HomeScreen> {
       drawer: const AppDrawer(),
       body: RefreshIndicator(
         onRefresh: _refresh,
-        color: const Color(0xFF6A11CB),
+        color: const Color(0xFF1976D2),
         backgroundColor: Colors.white,
         displacement: 40,
         edgeOffset: 20,
@@ -220,46 +237,58 @@ class _HomeScreenState extends State<HomeScreen> {
           controller: _scrollController,
           physics: const AlwaysScrollableScrollPhysics(),
           slivers: [
-            // Filter indicator
+            // Sticky Featured Properties Header
+            SliverPersistentHeader(
+              pinned: true,
+              floating: false,
+              delegate: _FeaturedPropertiesPersistentHeaderDelegate(),
+            ),
             if (_currentFilters.isNotEmpty)
               SliverToBoxAdapter(
-                child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                  margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(12),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.grey.withOpacity(0.2),
-                        blurRadius: 8,
-                        offset: const Offset(0, 2),
+                child: Column(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(12),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey.withOpacity(0.2),
+                            blurRadius: 8,
+                            offset: const Offset(0, 2),
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
-                  child: Row(
-                    children: [
-                      const Icon(Icons.filter_alt_rounded, size: 20, color: Color(0xFF6A11CB)),
-                      const SizedBox(width: 8),
-                      Expanded(
-                        child: Text(
-                          'Filters: ${_currentFilters.entries.map((e) => '${e.key}: ${e.value}').join(', ')}',
-                          style: const TextStyle(fontSize: 14, color: Color(0xFF2D3748)),
-                          overflow: TextOverflow.ellipsis,
-                        ),
+                      child: Row(
+                        children: [
+                          const Icon(Icons.filter_alt_rounded, size: 20, color: const Color(0xFF1976D2)),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Text(
+                              'Filters: ${_currentFilters.entries.map((e) => '${e.key}: ${e.value}').join(', ')}',
+                              style: const TextStyle(fontSize: 14, color: Color(0xFF2D3748)),
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                          TextButton.icon(
+                            onPressed: () {
+                              setState(() {
+                                _currentFilters = {};
+                                _filteredPosts = _allPosts;
+                              });
+                            },
+                            icon: const Icon(Icons.clear, size: 16, color: Colors.red),
+                            label: const Text('Clear', style: TextStyle(color: Colors.red)),
+                          ),
+                        ],
                       ),
-                      TextButton.icon(
-                        onPressed: () {
-                          setState(() {
-                            _currentFilters = {};
-                            _filteredPosts = _allPosts;
-                          });
-                        },
-                        icon: const Icon(Icons.clear, size: 16, color: Colors.red),
-                        label: const Text('Clear', style: TextStyle(color: Colors.red)),
-                      ),
-                    ],
-                  ),
+                    )
+                    .animate()
+                    .fadeIn(duration: 600.ms)
+                    .slide(begin: const Offset(0, -0.2), duration: 400.ms),
+                  ],
                 ),
               ),
 
@@ -272,25 +301,19 @@ class _HomeScreenState extends State<HomeScreen> {
                   children: [
                     Row(
                       children: [
-                        Container(
-                          padding: const EdgeInsets.all(10),
-                          decoration: BoxDecoration(
-                            gradient: const LinearGradient(
-                              colors: [Color(0xFF6A11CB), Color(0xFF2575FC)],
-                            ),
-                            shape: BoxShape.circle,
-                          ),
-                          child: const Icon(Icons.home_rounded, color: Colors.white, size: 24),
-                        ),
-                        const SizedBox(width: 12),
-                        Text(
-                          'Featured Properties (${_filteredPosts.length})',
-                          style: const TextStyle(
-                            fontSize: 22,
-                            fontWeight: FontWeight.bold,
-                            color: Color(0xFF1A202C),
-                          ),
-                        ),
+                        // Container(
+                        //   padding: const EdgeInsets.all(10),
+                        //   decoration: BoxDecoration(
+                        //     gradient: const LinearGradient(
+                        //       colors: [const Color(0xFF1976D2), Color(0xFF2575FC)],
+                        //     ),
+                        //     shape: BoxShape.circle,
+                        //   ),
+                        //   child: const Icon(Icons.home_rounded, color: Colors.white, size: 24),
+                        // ),
+
+                 
+                        
                       ],
                     ),
                   ],
@@ -301,7 +324,7 @@ class _HomeScreenState extends State<HomeScreen> {
             // Houses List
             SliverPadding(
               padding: EdgeInsets.symmetric(
-                horizontal: MediaQuery.of(context).size.width > 600 ? 32 : 16,
+                horizontal: MediaQuery.of(context).size.width > 600 ? 16 : 8,
               ),
               sliver: FutureBuilder<List<Post>>(
                 future: _postsFuture,
@@ -310,41 +333,42 @@ class _HomeScreenState extends State<HomeScreen> {
                     return _buildStateMessage(
                       icon: const CircularProgressIndicator(
                         strokeWidth: 4,
-                        valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF6A11CB)),
+                        valueColor: AlwaysStoppedAnimation<Color>(const Color(0xFF1976D2)),
                       ),
                       message: 'Loading properties...',
-                      color: const Color(0xFF6A11CB),
+                      color: const Color(0xFF1976D2),
                     );
                   } else if (snapshot.hasError) {
-                    print('Error fetching posts: ${snapshot.error}');
+              
                     return _buildStateMessage(
-                      icon: const Icon(Icons.error_outline_rounded, size: 48, color: Color(0xFFE53E3E)),
-                      message: 'Error loading properties',
-                      subMessage: '${snapshot.error}',
-                      color: const Color(0xFFE53E3E),
+                      icon: const Icon(Icons.error_outline_rounded, size: 70, color: Color.fromARGB(255, 7, 11, 212)),
+                      message: 'Error loading properties something went wrong so plaese try again letter ',
+                      // subMessage: '${snapshot.error}',
+                      subMessage: 'sever is now down for temporary',
+                      color: const Color.fromARGB(255, 9, 6, 231),
                     );
                   } else if (!snapshot.hasData || _filteredPosts.isEmpty) {
                     return _buildStateMessage(
-                      icon: const Icon(Icons.home_outlined, size: 48, color: Color(0xFF6A11CB)),
+                      icon: const Icon(Icons.home_outlined, size: 48, color: Color(0xFF1976D2)),
                       message: 'No properties found',
                       subMessage: _currentFilters.isEmpty
                           ? 'Check back later for new listings'
                           : 'Try adjusting your filters',
-                      color: const Color(0xFF6A11CB),
+                      color: const Color(0xFF1976D2),
                     );
                   } else {
                     return SliverGrid(
-                      gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-                      maxCrossAxisExtent: MediaQuery.of(context).size.width > 600 ? 400 : 500,
-                      mainAxisSpacing: 10,
-                      crossAxisSpacing: 10,
-                      childAspectRatio: MediaQuery.of(context).size.width > 600 ? 0.85: 0.8,
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: MediaQuery.of(context).size.width > 600 ? 3 : 2,
+                        mainAxisSpacing: 10,
+                        crossAxisSpacing: 10,
+                        childAspectRatio: MediaQuery.of(context).size.width > 600 ? 0.85 : 0.75,
                       ),
                       delegate: SliverChildBuilderDelegate(
-                      (context, index) {
-                        return HouseCard(post: _filteredPosts[index]);
-                      },
-                      childCount: _filteredPosts.length,
+                        (context, index) {
+                          return HouseCard(post: _filteredPosts[index]);
+                        },
+                        childCount: _filteredPosts.length,
                       ),
                     );
                   }
@@ -359,7 +383,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   padding: const EdgeInsets.all(16),
                   child: const Center(
                     child: CircularProgressIndicator(
-                      valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF6A11CB)),
+                      valueColor: AlwaysStoppedAnimation<Color>(const Color(0xFF1976D2)),
                     ),
                   ),
                 ),
@@ -383,7 +407,7 @@ class _HomeScreenState extends State<HomeScreen> {
             SliverToBoxAdapter(
               child: Container(
                 margin: EdgeInsets.symmetric(
-                  horizontal: MediaQuery.of(context).size.width > 600 ? 32 : 16,
+                  horizontal: MediaQuery.of(context).size.width > 600 ? 16 : 16,
                   vertical: 24,
                 ),
                 padding: const EdgeInsets.all(24),
@@ -391,12 +415,12 @@ class _HomeScreenState extends State<HomeScreen> {
                   gradient: const LinearGradient(
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
-                    colors: [Color(0xFF6A11CB), Color(0xFF2575FC)],
+                    colors: [const Color(0xFF1976D2), Color(0xFF2575FC)],
                   ),
                   borderRadius: BorderRadius.circular(20),
                   boxShadow: [
                     BoxShadow(
-                      color: const Color(0xFF6A11CB).withOpacity(0.3),
+                      color: const Color(0xFF1976D2).withOpacity(0.3),
                       blurRadius: 15,
                       offset: const Offset(0, 5),
                     ),
@@ -430,15 +454,15 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                     const SizedBox(height: 20),
                     SizedBox(
-                      width: double.infinity,
+                      width: MediaQuery.of(context).size.width > 600 ? 200 : 150,
                       child: ElevatedButton.icon(
                         onPressed: () => Navigator.pushNamed(context, '/agents'),
-                        icon: const Icon(Icons.arrow_forward_rounded, color: Color(0xFF6A11CB)),
+                        icon: const Icon(Icons.arrow_forward_rounded, color: const Color(0xFF1976D2)),
                         label: const Text(
                           'Browse Agents',
                           style: TextStyle(
                             fontWeight: FontWeight.w600,
-                            color: Color(0xFF6A11CB),
+                            color: const Color(0xFF1976D2),
                             fontSize: 16,
                           ),
                         ),
@@ -462,7 +486,7 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: _showFilterDialog,
-        backgroundColor: const Color(0xFF6A11CB),
+        backgroundColor: const Color(0xFF1976D2),
         child: const Icon(Icons.search_rounded, color: Colors.white),
         tooltip: 'Quick Search',
       ),
@@ -480,7 +504,7 @@ class _HomeScreenState extends State<HomeScreen> {
         alignment: Alignment.center,
         margin: EdgeInsets.symmetric(
           horizontal: MediaQuery.of(context).size.width > 600 ? 32 : 16,
-          vertical: 40,
+          vertical:MediaQuery.of(context).size.height *0.17,
         ),
         padding: const EdgeInsets.all(24),
         decoration: BoxDecoration(
@@ -522,5 +546,53 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       ),
     );
+  }
+}
+
+class _FeaturedPropertiesPersistentHeaderDelegate
+    extends SliverPersistentHeaderDelegate {
+  @override
+  Widget build(
+      BuildContext context, double shrinkOffset, bool overlapsContent) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          colors: [Colors.white, Colors.white],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(0),
+        boxShadow: [
+          BoxShadow(
+            color: const Color(0xFF1976D2).withOpacity(0.15),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Center(
+        child: Text(
+            'Featured Properties Available',
+          style: const TextStyle(
+            fontSize: 24,
+            fontWeight: FontWeight.w600,
+            color: Color.fromARGB(255, 5, 130, 219),
+            fontStyle: FontStyle.italic
+          ),
+        ),
+      ),
+    );
+  }
+
+  @override
+  double get maxExtent => 80;
+
+  @override
+  double get minExtent => 60;
+
+  @override
+  bool shouldRebuild(_FeaturedPropertiesPersistentHeaderDelegate oldDelegate) {
+    return false;
   }
 }

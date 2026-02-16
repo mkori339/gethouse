@@ -22,8 +22,10 @@ import 'screens/about_screen.dart';
 import 'screens/agents_screen.dart';
 import 'screens/post_house_screen.dart';
 import 'widgets/auth_gate.dart'; // optional - if you created it
+import 'theme.dart'; // <-- import the shared theme
 
 void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
   runApp(const MkorishopApp());
 }
 
@@ -33,9 +35,10 @@ class MkorishopApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Mkorishop',
+      title: 'Gethouse',
       navigatorKey: NavigationService.navigatorKey, // <- important
       debugShowCheckedModeBanner: false,
+      theme: appTheme, // <-- apply the shared theme here
       initialRoute: '/',
       routes: {
         '/': (context) => const SplashScreen(),

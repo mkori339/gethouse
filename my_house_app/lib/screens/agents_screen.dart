@@ -119,13 +119,13 @@ class _AgentsScreenState extends State<AgentsScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text(
-          'Professional Agents ',
+          'Featured Properties ',
           style: TextStyle(
             fontWeight: FontWeight.bold,
             fontSize: 24,
           ),
         ),
-        backgroundColor: const Color(0xFF6A11CB),
+        backgroundColor: const Color(0xFF1976D2),
         foregroundColor: Colors.white,
         elevation: 0,
         shape: const RoundedRectangleBorder(
@@ -165,7 +165,7 @@ class _AgentsScreenState extends State<AgentsScreen> {
         ),
         child: RefreshIndicator(
           onRefresh: _refresh,
-          color: const Color(0xFF6A11CB),
+          color: const Color(0xFF1976D2),
           backgroundColor: Colors.white,
           child: Column(
             children: [
@@ -185,7 +185,7 @@ class _AgentsScreenState extends State<AgentsScreen> {
                       ),
                     ],
                     border: Border.all(
-                      color: const Color(0xFF6A11CB).withOpacity(0.2),
+                      color: const Color(0xFF1976D2).withOpacity(0.2),
                       width: 1.5,
                     ),
                   ),
@@ -195,10 +195,10 @@ class _AgentsScreenState extends State<AgentsScreen> {
                         width: 32,
                         height: 32,
                         decoration: BoxDecoration(
-                          color: const Color(0xFF6A11CB).withOpacity(0.1),
+                          color: const Color(0xFF1976D2).withOpacity(0.1),
                           shape: BoxShape.circle,
                         ),
-                        child: const Icon(Iconsax.filter, size: 18, color: Color(0xFF6A11CB)),
+                        child: const Icon(Iconsax.filter, size: 18, color: Color(0xFF1976D2)),
                       ),
                       const SizedBox(width: 12),
                       Expanded(
@@ -207,7 +207,7 @@ class _AgentsScreenState extends State<AgentsScreen> {
                           style: const TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w600,
-                            color: Color(0xFF6A11CB),
+                            color: Color(0xFF1976D2),
                           ),
                           overflow: TextOverflow.ellipsis,
                         ),
@@ -236,14 +236,14 @@ class _AgentsScreenState extends State<AgentsScreen> {
                 margin: const EdgeInsets.symmetric(horizontal: 16),
                 decoration: BoxDecoration(
                   gradient: const LinearGradient(
-                    colors: [Color(0xFF6A11CB), Color(0xFF2575FC)],
+                    colors: [Color(0xFF1976D2), Color(0xFF2575FC)],
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                   ),
                   borderRadius: BorderRadius.circular(20),
                   boxShadow: [
                     BoxShadow(
-                      color: const Color(0xFF6A11CB).withOpacity(0.3),
+                      color: const Color(0xFF1976D2).withOpacity(0.3),
                       blurRadius: 15,
                       offset: const Offset(0, 5),
                     ),
@@ -286,7 +286,7 @@ class _AgentsScreenState extends State<AgentsScreen> {
                     if (snapshot.connectionState == ConnectionState.waiting) {
                       return const Center(
                         child: CircularProgressIndicator(
-                          valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF6A11CB)),
+                          valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF1976D2)),
                         ),
                       );
                     } else if (snapshot.hasError) {
@@ -319,7 +319,7 @@ class _AgentsScreenState extends State<AgentsScreen> {
                               icon: const Icon(Iconsax.refresh),
                               label: const Text('Try Again'),
                               style: ElevatedButton.styleFrom(
-                                backgroundColor: const Color(0xFF6A11CB),
+                                backgroundColor: const Color(0xFF1976D2),
                                 foregroundColor: Colors.white,
                                 padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
                                 shape: RoundedRectangleBorder(
@@ -365,7 +365,7 @@ class _AgentsScreenState extends State<AgentsScreen> {
                                   });
                                 },
                                 style: ElevatedButton.styleFrom(
-                                  backgroundColor: const Color(0xFF6A11CB),
+                                  backgroundColor: const Color(0xFF1976D2),
                                   foregroundColor: Colors.white,
                                   padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
                                   shape: RoundedRectangleBorder(
@@ -380,16 +380,14 @@ class _AgentsScreenState extends State<AgentsScreen> {
                     } else {
                       return GridView.builder(
                         padding: EdgeInsets.symmetric(
-                          horizontal: isDesktop ? 24 : 16,
+                          horizontal: isDesktop ? 24 : 12,
                           vertical: 16,
                         ),
                         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: isDesktop ? 3 : 1,
-                          crossAxisSpacing: 20,
+                          crossAxisCount: isDesktop ? 3 : 2,
+                          crossAxisSpacing: isDesktop ? 20 : 12,
                           mainAxisSpacing: 20,
-                       childAspectRatio: isDesktop ? 1.5 : 1.8,
-
- // Reduced height
+                          childAspectRatio: isDesktop ? 1.5 : 1.1,
                         ),
                         itemCount: _filteredAgents.length,
                         itemBuilder: (context, index) {

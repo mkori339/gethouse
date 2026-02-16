@@ -27,109 +27,112 @@ class _HouseSearchFilterState extends State<HouseSearchFilter> {
       padding: const EdgeInsets.all(16.0),
       child: Form(
         key: _formKey,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Text(
-              'Filter Properties',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: Colors.grey[700],
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Text(
+                'Filter Properties',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.grey[700],
+                ),
               ),
-            ),
-            const SizedBox(height: 16),
-            DropdownButtonFormField<String>(
-              value: _filters['category'],
-              decoration: const InputDecoration(
-                labelText: 'Category',
-                border: OutlineInputBorder(),
+              const SizedBox(height: 16),
+              DropdownButtonFormField<String>(
+                value: _filters['category'],
+                decoration: const InputDecoration(
+                  labelText: 'Category',
+                  border: OutlineInputBorder(),
+                ),
+                items: _categories.map((String value) {
+                  return DropdownMenuItem<String>(
+                    value: value,
+                    child: Text(value),
+                  );
+                }).toList(),
+                onChanged: (value) {
+                  setState(() {
+                    _filters['category'] = value;
+                  });
+                },
               ),
-              items: _categories.map((String value) {
-                return DropdownMenuItem<String>(
-                  value: value,
-                  child: Text(value),
-                );
-              }).toList(),
-              onChanged: (value) {
-                setState(() {
-                  _filters['category'] = value;
-                });
-              },
-            ),
-            const SizedBox(height: 16),
-            DropdownButtonFormField<String>(
-              value: _filters['type'],
-              decoration: const InputDecoration(
-                labelText: 'Type',
-                border: OutlineInputBorder(),
+              const SizedBox(height: 16),
+              DropdownButtonFormField<String>(
+                value: _filters['type'],
+                decoration: const InputDecoration(
+                  labelText: 'Type',
+                  border: OutlineInputBorder(),
+                ),
+                items: _types.map((String value) {
+                  return DropdownMenuItem<String>(
+                    value: value,
+                    child: Text(value),
+                  );
+                }).toList(),
+                onChanged: (value) {
+                  setState(() {
+                    _filters['type'] = value;
+                  });
+                },
               ),
-              items: _types.map((String value) {
-                return DropdownMenuItem<String>(
-                  value: value,
-                  child: Text(value),
-                );
-              }).toList(),
-              onChanged: (value) {
-                setState(() {
-                  _filters['type'] = value;
-                });
-              },
-            ),
-            const SizedBox(height: 16),
-            DropdownButtonFormField<String>(
-              value: _filters['region'],
-              decoration: const InputDecoration(
-                labelText: 'Region',
-                border: OutlineInputBorder(),
+              const SizedBox(height: 16),
+              DropdownButtonFormField<String>(
+                value: _filters['region'],
+                decoration: const InputDecoration(
+                  labelText: 'Region',
+                  border: OutlineInputBorder(),
+                ),
+                items: _regions.map((String value) {
+                  return DropdownMenuItem<String>(
+                    value: value,
+                    child: Text(value),
+                  );
+                }).toList(),
+                onChanged: (value) {
+                  setState(() {
+                    _filters['region'] = value;
+                  });
+                },
               ),
-              items: _regions.map((String value) {
-                return DropdownMenuItem<String>(
-                  value: value,
-                  child: Text(value),
-                );
-              }).toList(),
-              onChanged: (value) {
-                setState(() {
-                  _filters['region'] = value;
-                });
-              },
-            ),
-            const SizedBox(height: 16),
-            TextFormField(
-              decoration: const InputDecoration(
-                labelText: 'Maximum Cost (TSH)',
-                border: OutlineInputBorder(),
+              const SizedBox(height: 16),
+              TextFormField(
+                decoration: const InputDecoration(
+                  labelText: 'Maximum Cost (TSH)',
+                  border: OutlineInputBorder(),
+                ),
+                keyboardType: TextInputType.number,
+                onChanged: (value) {
+                  _filters['cost_below'] = value.isNotEmpty ? double.tryParse(value) : null;
+                },
               ),
-              keyboardType: TextInputType.number,
-              onChanged: (value) {
-                _filters['cost_below'] = value.isNotEmpty ? double.tryParse(value) : null;
-              },
-            ),
-            const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () {
-                widget.onFilter(_filters);
-                Navigator.pop(context);
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF6A11CB),
-                foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(vertical: 16),
+              const SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: () {
+                  widget.onFilter(_filters);
+                  Navigator.pop(context);
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF1976D2),
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                ),
+                child: const Text('Apply Filters'),
               ),
-              child: const Text('Apply Filters'),
-            ),
-            TextButton(
-              onPressed: () {
-                setState(() {
-                  _filters.clear();
-                });
-                widget.onFilter({});
-                Navigator.pop(context);
-              },
-              child: const Text('Clear Filters'),
-            ),
-          ],
+              TextButton(
+                onPressed: () {
+                  setState(() {
+                    _filters.clear();
+                  });
+                  widget.onFilter({});
+                  Navigator.pop(context);
+                },
+                child: const Text('Clear Filters'),
+              ),
+            ],
+          ),
         ),
       ),
     );

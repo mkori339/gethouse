@@ -156,7 +156,7 @@ class _AdminReportsScreenState extends State<AdminReportsScreen> with TickerProv
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: const Text('Report deleted successfully'),
-            backgroundColor: const Color(0xFF6A11CB),
+            backgroundColor: const Color(0xFF1976D2),
             duration: const Duration(seconds: 3),
             behavior: SnackBarBehavior.floating,
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -338,7 +338,7 @@ class _AdminReportsScreenState extends State<AdminReportsScreen> with TickerProv
                             'Reporter: $reporterName',
                             style: const TextStyle(fontSize: 12, color: Colors.white),
                           ),
-                          backgroundColor: const Color(0xFF6A11CB),
+                          backgroundColor: const Color(0xFF1976D2),
                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                           padding: const EdgeInsets.symmetric(horizontal: 8),
                         ),
@@ -357,7 +357,7 @@ class _AdminReportsScreenState extends State<AdminReportsScreen> with TickerProv
                 ),
               ),
               IconButton(
-                icon: const Icon(Icons.open_in_new_rounded, color: Color(0xFF6A11CB)),
+                icon: const Icon(Icons.open_in_new_rounded, color: Color(0xFF1976D2)),
                 onPressed: () => _openDetailDialog(report, reporter, reported),
                 tooltip: 'View Report Details',
               ),
@@ -401,7 +401,7 @@ class _AdminReportsScreenState extends State<AdminReportsScreen> with TickerProv
             gradient: LinearGradient(
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
-              colors: [Color(0xFF6A11CB), Color(0xFF2575FC)],
+              colors: [Color(0xFF1976D2), Color(0xFF2575FC)],
             ),
           ),
         ),
@@ -417,7 +417,7 @@ class _AdminReportsScreenState extends State<AdminReportsScreen> with TickerProv
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: _fetchReports,
-        backgroundColor: const Color(0xFF6A11CB),
+        backgroundColor: const Color(0xFF1976D2),
         foregroundColor: Colors.white,
         tooltip: 'Refresh Reports',
         child: const Icon(Icons.refresh_rounded),
@@ -433,7 +433,7 @@ class _AdminReportsScreenState extends State<AdminReportsScreen> with TickerProv
         child: _loading
             ? const Center(
                 child: CircularProgressIndicator(
-                  valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF6A11CB)),
+                  valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF1976D2)),
                 ),
               )
             : FadeTransition(
@@ -461,10 +461,10 @@ class _AdminReportsScreenState extends State<AdminReportsScreen> with TickerProv
                           controller: _searchController,
                           decoration: InputDecoration(
                             hintText: 'Search reports by reason, reporter, or type',
-                            prefixIcon: const Icon(Icons.search_rounded, color: Color(0xFF6A11CB)),
+                            prefixIcon: const Icon(Icons.search_rounded, color: Color(0xFF1976D2)),
                             suffixIcon: _search.isNotEmpty
                                 ? IconButton(
-                                    icon: const Icon(Icons.clear_rounded, color: Color(0xFF6A11CB)),
+                                    icon: const Icon(Icons.clear_rounded, color: Color(0xFF1976D2)),
                                     onPressed: () {
                                       setState(() {
                                         _search = '';
@@ -475,7 +475,7 @@ class _AdminReportsScreenState extends State<AdminReportsScreen> with TickerProv
                                 : null,
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(12),
-                              borderSide: const BorderSide(color: Color(0xFF6A11CB), width: 1.5),
+                              borderSide: const BorderSide(color: Color(0xFF1976D2), width: 1.5),
                             ),
                             enabledBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(12),
@@ -483,7 +483,7 @@ class _AdminReportsScreenState extends State<AdminReportsScreen> with TickerProv
                             ),
                             focusedBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(12),
-                              borderSide: const BorderSide(color: Color(0xFF6A11CB), width: 2),
+                              borderSide: const BorderSide(color: Color(0xFF1976D2), width: 2),
                             ),
                             filled: true,
                             fillColor: Colors.white,
@@ -496,7 +496,7 @@ class _AdminReportsScreenState extends State<AdminReportsScreen> with TickerProv
                             fontSize: isLargeScreen ? 16 : 14,
                             color: const Color(0xFF1A202C),
                           ),
-                          cursorColor: const Color(0xFF6A11CB),
+                          cursorColor: const Color(0xFF1976D2),
                         ),
                       ),
                       const SizedBox(height: 16),
@@ -533,7 +533,7 @@ class _AdminReportsScreenState extends State<AdminReportsScreen> with TickerProv
                                         icon: const Icon(Icons.refresh_rounded, size: 20),
                                         label: const Text('Try Again'),
                                         style: ElevatedButton.styleFrom(
-                                          backgroundColor: const Color(0xFF6A11CB),
+                                          backgroundColor: const Color(0xFF1976D2),
                                           foregroundColor: Colors.white,
                                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                                           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
@@ -552,7 +552,7 @@ class _AdminReportsScreenState extends State<AdminReportsScreen> with TickerProv
                                   )
                                 : RefreshIndicator(
                                     onRefresh: _fetchReports,
-                                    color: const Color(0xFF6A11CB),
+                                    color: const Color(0xFF1976D2),
                                     child: isLargeScreen
                                         ? GridView.builder(
                                             gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(

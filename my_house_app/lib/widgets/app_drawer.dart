@@ -30,11 +30,16 @@ class _AppDrawerState extends State<AppDrawer> {
   Widget build(BuildContext context) {
     return Drawer(
       child: Container(
+        
         decoration: const BoxDecoration(
+          borderRadius: BorderRadius.only(
+            topRight: Radius.circular(0),
+            bottomRight: Radius.circular(0),
+          ),
           gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
-            colors: [Color(0xFF6A11CB), Color(0xFF2575FC)],
+            colors: [const Color(0xFF1976D2), Color(0xFF2575FC)],
           ),
         ),
         child: ListView(
@@ -42,7 +47,7 @@ class _AppDrawerState extends State<AppDrawer> {
           children: [
             DrawerHeader(
               decoration: const BoxDecoration(
-                color: Color(0xFF6A11CB),
+                color: const Color(0xFF1976D2),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -165,13 +170,13 @@ class _AppDrawerState extends State<AppDrawer> {
             ],
 
             // Always show Help
-            const Divider(color: Colors.white24, thickness: 1, indent: 20, endIndent: 20),
-            _buildDrawerItem(
-              context: context,
-              icon: Icons.help_center,
-              title: 'Help & Support',
-              route: '/about_programmer',
-            ),
+             const Divider(color: Colors.white24, thickness: 2, indent: 20, endIndent: 20),
+            // _buildDrawerItem(
+            //   context: context,
+            //   icon: Icons.help_center,
+            //   title: 'Help & Support',
+            //   route: '/about_programmer',
+            // ),
 
             const SizedBox(height: 20),
             Padding(
