@@ -30,6 +30,33 @@ class ApiController extends Controller
         return CustomUser::where('api_token', $token)->first();
     }
 
+    private function userPayload(CustomUser $user): array
+    {
+        return [
+            'id' => $user->id,
+            'username' => $user->username,
+            'email' => $user->email,
+            'phone' => $user->phone,
+            'role' => $user->role,
+            'is_blocked' => (bool) $user->is_blocked,
+            'created_at' => $user->created_at,
+            'updated_at' => $user->updated_at,
+        ];
+    }
+
+    private function transformPostImages(Post $post): Post
+    {
+        $post->images = $post->images->map(function ($img) {
+            return [
+                'id' => $img->id,
+                'path' => $img->path,
+                'url' => asset('storage/' . $img->path),
+            ];
+        });
+
+        return $post;
+    }
+
     // -------------------
     // Register
     // -------------------
@@ -59,20 +86,21 @@ class ApiController extends Controller
 
         return response()->json([
             'message' => 'User registered successfully',
-            'user' => $user
+            'token' => $user->api_token,
+            'user' => $this->userPayload($user),
         ], 201);
     }
 
     // -------------------
     // Login
     // -------------------
-     public function mee(Request $request)
+    public function mee(Request $request)
     {
         $user = $this->authUser($request);
         if (!$user) {
             return null;
         }
-        return response()->json($user);
+        return response()->json($this->userPayload($user));
     }
     public function login(Request $request)
     {
@@ -86,9 +114,9 @@ class ApiController extends Controller
         if (!$user || !Hash::check($validated['password'], $user->password)) {
             return response()->json(['message' => 'Invalid email or password'], 401);
        }
-// if ($user->is_blocked) {
-//     return response()->json(['message' => 'Your account is blocked'], 403);
-// }
+        if ($user->is_blocked) {
+            return response()->json(['message' => 'Your account is blocked'], 403);
+        }
 
         // Refresh token on login
         $user->api_token = Str::random(60);
@@ -97,7 +125,7 @@ class ApiController extends Controller
         return response()->json([
             'message' => 'Login successful',
             'token' => $user->api_token,
-            'user' => $user
+            'user' => $this->userPayload($user)
         ], 200);
     }
 
@@ -196,11 +224,10 @@ class ApiController extends Controller
     // Only paid/verified posts
     $query->where('status', 'paid');
 
-    $posts = $query->with('images')->get();
+        $posts = $query->with('images')->get();
 
-    $posts->transform(function($post) {
-        $post->images = $post->images->map(fn($img) => asset('storage/' . $img->path));
-        return $post;
+        $posts->transform(function($post) {
+        return $this->transformPostImages($post);
     });
 
     return response()->json([
@@ -219,8 +246,7 @@ class ApiController extends Controller
 
     // convert images path to full URLs
     $posts->transform(function($post) {
-        $post->images = $post->images->map(fn($img) => asset('storage/' . $img->path));
-        return $post;
+        return $this->transformPostImages($post);
     });
 
     return response()->json([
@@ -234,8 +260,7 @@ class ApiController extends Controller
 //  $posts = Post::where('id', $id)->get();
     // convert images path to full URLs
     $posts->transform(function($post) {
-    $post->images = $post->images->map(fn($img) => asset('storage/' . $img->path));
-    return $post;
+    return $this->transformPostImages($post);
     });
 
     return response()->json([
@@ -249,11 +274,18 @@ class ApiController extends Controller
     // -------------------
     public function updateProfile(Request $request, $id)
     {
+        $actor = $this->authUser($request);
+        if (!$actor) return response()->json(['message' => 'Unauthorized'], 401);
+
         $user = CustomUser::find($id);
         if (!$user) return response()->json(['message' => 'User not found'], 404);
 
+        if ($actor->id !== $user->id && $actor->role !== 'admin') {
+            return response()->json(['message' => 'Forbidden'], 403);
+        }
+
         // Validate username/email uniqueness if changed
-        $rules = [];
+        $rules = ['phone' => 'nullable|string'];
         if ($request->filled('username') && $request->username !== $user->username) {
             $rules['username'] = 'required|unique:custom_users,username';
         }
@@ -263,25 +295,53 @@ class ApiController extends Controller
         if ($request->filled('password')) {
             $rules['password'] = 'nullable|min:8';
         }
+        if ($actor->role === 'admin') {
+            if ($request->filled('role')) {
+                $rules['role'] = 'required|in:admin,customer';
+            }
+            if ($request->has('is_blocked')) {
+                $rules['is_blocked'] = 'required|boolean';
+            }
+        } elseif ($request->has('role') || $request->has('is_blocked')) {
+            return response()->json(['message' => 'Only admins can change role or block status'], 403);
+        }
         $request->validate($rules);
 
         if ($request->filled('username')) $user->username = $request->username;
         if ($request->filled('email')) $user->email = $request->email;
-        if ($request->filled('phone')) $user->phone = $request->phone;
+        if ($request->has('phone')) $user->phone = $request->phone;
         if ($request->filled('password')) $user->password = Hash::make($request->password);
+        if ($actor->role === 'admin') {
+            if ($request->filled('role')) $user->role = $request->role;
+            if ($request->has('is_blocked')) $user->is_blocked = $request->boolean('is_blocked');
+        }
 
         $user->save();
 
-        return response()->json(['message' => 'Profile updated successfully', 'user' => $user], 200);
+        return response()->json([
+            'message' => 'Profile updated successfully',
+            'user' => $this->userPayload($user),
+        ], 200);
     }
 
     // -------------------
     // Delete user (user/delete/{id})
     // -------------------
-   public function deleteUser($id)
+   public function deleteUser(Request $request, $id)
 {
+    $actor = $this->authUser($request);
+    if (!$actor) return response()->json(['message' => 'Unauthorized'], 401);
+
     $user = CustomUser::find($id);
     if (!$user) return response()->json(['message' => 'User not found'], 404);
+
+    if ($actor->id !== $user->id && $actor->role !== 'admin') {
+        return response()->json(['message' => 'Forbidden'], 403);
+    }
+
+    if ($actor->role === 'admin' && $actor->id === $user->id) {
+        return response()->json(['message' => 'Admins cannot delete their own account from this endpoint'], 422);
+    }
 
     // delete post image folders for user's posts
     $posts = Post::where('user_id', $user->id)->get();
@@ -298,12 +358,19 @@ class ApiController extends Controller
     // -------------------
     // View profile (user/view_profile/{id})
     // -------------------
-    public function viewProfile($id)
+    public function viewProfile(Request $request, $id)
     {
+        $actor = $this->authUser($request);
+        if (!$actor) return response()->json(['message' => 'Unauthorized'], 401);
+
         $user = CustomUser::find($id);
         if (!$user) return response()->json(['message' => 'User not found'], 404);
 
-        return response()->json($user, 200);
+        if ($actor->id !== $user->id && $actor->role !== 'admin') {
+            return response()->json(['message' => 'Forbidden'], 403);
+        }
+
+        return response()->json($this->userPayload($user), 200);
     }
 
     // -------------------
@@ -312,21 +379,30 @@ class ApiController extends Controller
     public function createAgent(Request $request)
     {
         $user = $this->authUser($request);
+        if (!$user) return response()->json(['message' => 'Unauthorized'], 401);
+
         $validated = $request->validate([
             'agent_name' => 'required',
             'region' => 'required',
             'phone' => 'required',
         ]);
 
-        $agent = Agent::create([
+        $agent = Agent::updateOrCreate([
+            'created_by' => $user->id,
+        ], [
             'agent_name' => $validated['agent_name'],
             'region' => $validated['region'],
             'phone' => $validated['phone'],
             'status' => 'pending',
-            'id'=>$user['id'],
+            'created_by' => $user->id,
         ]);
 
-        return response()->json(['message' => 'Agent created successfully', 'agent' => $agent], 201);
+        return response()->json([
+            'message' => $agent->wasRecentlyCreated
+                ? 'Agent created successfully'
+                : 'Agent request updated successfully',
+            'agent' => $agent,
+        ], $agent->wasRecentlyCreated ? 201 : 200);
     }
 
     // -------------------
@@ -334,8 +410,10 @@ class ApiController extends Controller
     // -------------------
     public function viewAgent($id)
     {
-        
         $agent = Agent::find($id);
+        if (!$agent && is_numeric($id)) {
+            $agent = Agent::where('created_by', $id)->first();
+        }
         if (!$agent) return response()->json(['message' => 'Agent not found'], 404);
 
         return response()->json($agent, 200);
@@ -346,8 +424,15 @@ class ApiController extends Controller
     // -------------------
     public function updateAgent(Request $request, $id)
     {
+        $user = $this->authUser($request);
+        if (!$user) return response()->json(['message' => 'Unauthorized'], 401);
+
         $agent = Agent::find($id);
         if (!$agent) return response()->json(['message' => 'Agent not found'], 404);
+
+        if ($agent->created_by !== $user->id && $user->role !== 'admin') {
+            return response()->json(['message' => 'Forbidden'], 403);
+        }
 
         $request->validate([
             'agent_name' => 'nullable|string',
@@ -356,7 +441,12 @@ class ApiController extends Controller
             'status' => 'nullable|string',
         ]);
 
-        $agent->update($request->only(['agent_name', 'region', 'phone', 'status']));
+        $payload = $request->only(['agent_name', 'region', 'phone']);
+        if ($user->role === 'admin' && $request->filled('status')) {
+            $payload['status'] = $request->status;
+        }
+
+        $agent->update($payload);
 
         return response()->json(['message' => 'Agent updated successfully', 'agent' => $agent], 200);
     }
@@ -364,10 +454,17 @@ class ApiController extends Controller
     // -------------------
     // Agent: Delete (agent/delete/{id})
     // -------------------
-    public function deleteAgent($id)
+    public function deleteAgent(Request $request, $id)
     {
+        $user = $this->authUser($request);
+        if (!$user) return response()->json(['message' => 'Unauthorized'], 401);
+
         $agent = Agent::find($id);
         if (!$agent) return response()->json(['message' => 'Agent not found'], 404);
+
+        if ($agent->created_by !== $user->id && $user->role !== 'admin') {
+            return response()->json(['message' => 'Forbidden'], 403);
+        }
 
         $agent->delete();
         return response()->json(['message' => 'Agent deleted successfully'], 200);
@@ -405,6 +502,22 @@ class ApiController extends Controller
         return response()->json(['message' => 'Post verified and set to paid', 'post' => $post], 200);
     }
 
+    public function adminDeletePost(Request $request, $id)
+    {
+        $admin = $this->authUser($request);
+        if (!$admin) return response()->json(['message' => 'Unauthorized'], 401);
+        if ($admin->role !== 'admin') return response()->json(['message' => 'Forbidden'], 403);
+
+        $post = Post::find($id);
+        if (!$post) return response()->json(['message' => 'Post not found'], 404);
+
+        Storage::deleteDirectory('public/posts/' . $post->id);
+        PostImage::where('post_id', $post->id)->delete();
+        $post->delete();
+
+        return response()->json(['message' => 'Post deleted'], 200);
+    }
+
     // -------------------
     // Admin: View summary (admin/view)
     // -------------------
@@ -417,11 +530,18 @@ class ApiController extends Controller
         $usersCount = CustomUser::count();
         $agentsCount = Agent::count();
         $postsCount = Post::count();
+        $registrationSetting = Setting::where('key', 'registration_open')->first();
+        $registrationOpen = !$registrationSetting || $registrationSetting->value !== 'false';
 
         return response()->json([
             'users_count' => $usersCount,
             'agents_count' => $agentsCount,
-            'posts_count' => $postsCount
+            'posts_count' => $postsCount,
+            'registration_open' => $registrationOpen,
+            'pending_posts_count' => Post::where('status', '!=', 'paid')->count(),
+            'pending_agents_count' => Agent::where('status', '!=', 'paid')->count(),
+            'open_reports_count' => Report::where('status', 'open')->count(),
+            'blocked_users_count' => CustomUser::where('is_blocked', true)->count(),
         ], 200);
     }
 
@@ -570,7 +690,7 @@ class ApiController extends Controller
 
         // Enrich with reporter and reported entity
         $result = $reports->map(function ($r) {
-            $reported = 'null';
+            $reported = null;
             if ($r->report_type === 'post') {
                 $reported = Post::find($r->reported_id);
             } elseif ($r->report_type === 'agent') {
@@ -580,12 +700,26 @@ class ApiController extends Controller
 
             return [
                 'report' => $r,
-                'reporter' => $reporter,
+                'reporter' => $reporter ? $this->userPayload($reporter) : null,
                 'reported' => $reported
             ];
         });
 
         return response()->json(['count' => $result->count(), 'reports' => $result], 200);
+    }
+
+    public function adminDeleteReport(Request $request, $id)
+    {
+        $admin = $this->authUser($request);
+        if (!$admin) return response()->json(['message' => 'Unauthorized'], 401);
+        if ($admin->role !== 'admin') return response()->json(['message' => 'Forbidden'], 403);
+
+        $report = Report::find($id);
+        if (!$report) return response()->json(['message' => 'Report not found'], 404);
+
+        $report->delete();
+
+        return response()->json(['message' => 'Report deleted'], 200);
     }
     public function updateUserPost(Request $request, $id)
 {
@@ -633,7 +767,7 @@ class ApiController extends Controller
     }
 
     $post->load('images');
-    $post->images = $post->images->map(fn($img) => asset('storage/'.$img->path));
+    $this->transformPostImages($post);
 
     return response()->json(['message'=>'Post updated','post'=>$post], 200);
 }
@@ -713,7 +847,7 @@ public function unpaidPosts(Request $request)
     if ($admin->role !== 'admin') return response()->json(['message'=>'Forbidden'], 403);
 
     $posts = Post::where('status','!=','paid')->with('images')->get();
-    $posts->transform(fn($post) => tap($post, fn($p) => $p->images = $p->images->map(fn($i) => asset('storage/'.$i->path))));
+    $posts->transform(fn($post) => $this->transformPostImages($post));
     return response()->json(['count'=>$posts->count(),'posts'=>$posts], 200);
 }
 public function viewAllUsers(Request $request)
@@ -722,7 +856,7 @@ public function viewAllUsers(Request $request)
     if (!$admin) return response()->json(['message'=>'Unauthorized'], 401);
     if ($admin->role !== 'admin') return response()->json(['message'=>'Forbidden'], 403);
 
-    $users = CustomUser::all();
+    $users = CustomUser::all()->map(fn($user) => $this->userPayload($user));
     return response()->json(['count'=>$users->count(),'users'=>$users], 200);
 }
 public function blockUser(Request $request, $id)
@@ -736,18 +870,22 @@ public function blockUser(Request $request, $id)
     $user = CustomUser::find($id);
     if (!$user) return response()->json(['message'=>'User not found'], 404);
 
+    if ($admin->id === $user->id && $request->boolean('block')) {
+        return response()->json(['message' => 'Admins cannot block themselves'], 422);
+    }
+
     $user->is_blocked = $request->block;
     $user->save();
 
-    return response()->json(['message'=> $user->is_blocked ? 'User blocked' : 'User unblocked','user'=>$user], 200);
+    return response()->json([
+        'message'=> $user->is_blocked ? 'User blocked' : 'User unblocked',
+        'user' => $this->userPayload($user),
+    ], 200);
 }
 public function viewAllPostsPublic()
 {
     $posts = Post::where('status','paid')->with('images','user')->orderBy('created_at','desc')->get();
-    $posts->transform(function($post){
-        $post->images = $post->images->map(fn($img)=> asset('storage/'.$img->path));
-        return $post;
-    });
+    $posts->transform(fn($post) => $this->transformPostImages($post));
     return response()->json(['count'=>$posts->count(),'posts'=>$posts], 200);
 }
 // send message
@@ -963,4 +1101,3 @@ public function getComments($postId)
 
 
 }
-

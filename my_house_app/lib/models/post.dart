@@ -39,7 +39,11 @@ class Post {
     final imgs = <Map<String, dynamic>>[];
     if (json['images'] != null && json['images'] is List) {
       for (var i in json['images']) {
-        imgs.add(i as Map<String, dynamic>);
+        if (i is Map<String, dynamic>) {
+          imgs.add(Map<String, dynamic>.from(i));
+        } else if (i is String) {
+          imgs.add({'url': i});
+        }
       }
     }
 
@@ -47,7 +51,10 @@ class Post {
       // id: json['id'] as int,
       // userId: json['user_id'] as int,
       id: int.tryParse(json['id']?.toString() ?? '0') ?? 0,
-      userId: int.tryParse(json['userId']?.toString() ?? '0') ?? 0,
+      userId: int.tryParse(
+            json['user_id']?.toString() ?? json['userId']?.toString() ?? '0',
+          ) ??
+          0,
       poster: json['poster'] ?? '',
       category: json['category'] ?? '',
       type: json['type'] ?? '',
@@ -58,8 +65,10 @@ class Post {
       street: json['street'] ?? '',
       roomNo: json['room_no']?.toString() ?? '',
       status: json['status'] ?? '',
-      createdAt: DateTime.parse(json['created_at'] ?? DateTime.now().toString()),
-      updatedAt: DateTime.parse(json['updated_at'] ?? DateTime.now().toString()),
+      createdAt:
+          DateTime.parse(json['created_at'] ?? DateTime.now().toString()),
+      updatedAt:
+          DateTime.parse(json['updated_at'] ?? DateTime.now().toString()),
       images: imgs,
       user: json['user'] is Map ? json['user'] as Map<String, dynamic> : {},
     );

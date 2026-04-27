@@ -152,9 +152,10 @@ class _UpdatePostScreenState extends State<UpdatePostScreen> with SingleTickerPr
 
   Future<void> _pickImages() async {
     try {
-      final result = await FilePicker.platform.pickFiles(
+      final result = await FilePicker.pickFiles(
         type: FileType.image,
         allowMultiple: true,
+        withData: true,
       );
       if (result != null) {
         final validImages = result.files.where((file) {

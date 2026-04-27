@@ -94,7 +94,7 @@ class _PostHouseScreenState extends State<PostHouseScreen> {
   }
 
   Future<void> _pickImages() async {
-    final result = await FilePicker.platform.pickFiles(
+    final result = await FilePicker.pickFiles(
       allowMultiple: true,
       type: FileType.image,
       withData: true,

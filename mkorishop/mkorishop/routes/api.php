@@ -56,6 +56,8 @@ Route::delete('/comments/{id}', [ApiController::class, 'deleteComment']);
 Route::get('/agent/view/{id}', [ApiController::class, 'viewAgent']);//
 Route::get('/admin/view_reports', [ApiController::class, 'adminViewReports']);//
 Route::post('/admin/verify_post/{id}', [ApiController::class, 'adminVerifyPost']);//
+Route::delete('/admin/delete_post/{id}', [ApiController::class, 'adminDeletePost']);//
+Route::post('/admin/report/delete/{id}', [ApiController::class, 'adminDeleteReport']);//
 Route::get('/admin/view', [ApiController::class, 'adminView']);//
 Route::post('/admin/close_registration', [ApiController::class, 'adminCloseRegistration']);//
 // Route::get('/admin/view_paid_posts', [ApiController::class, 'adminViewPaidPosts']);//

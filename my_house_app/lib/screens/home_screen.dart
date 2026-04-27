@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:my_house_app/widgets/app_drawer.dart';
+import 'package:iconsax/iconsax.dart';
+import 'package:my_house_app/theme.dart';
+import 'package:my_house_app/widgets/app_shell.dart';
 import '../widgets/house_search_filter.dart';
 import '../services/api_service.dart';
 import '../models/post.dart';
@@ -22,7 +24,6 @@ class _HomeScreenState extends State<HomeScreen> {
   int _currentPage = 1;
   bool _isLoadingMore = false;
   bool _hasMorePages = true;
-  
 
   @override
   void initState() {
@@ -39,7 +40,8 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _scrollListener() {
-    if (_scrollController.offset >= _scrollController.position.maxScrollExtent &&
+    if (_scrollController.offset >=
+            _scrollController.position.maxScrollExtent &&
         !_scrollController.position.outOfRange &&
         !_isLoadingMore &&
         _hasMorePages) {
@@ -51,10 +53,12 @@ class _HomeScreenState extends State<HomeScreen> {
     try {
       final resp = await ApiService.get('/api/posts/public');
       List items = [];
-      if (resp is Map && resp['posts'] is List) items = resp['posts'];
+      if (resp is Map && resp['posts'] is List)
+        items = resp['posts'];
       else if (resp is List) items = resp;
 
-      final posts = items.map((p) => Post.fromJson(p as Map<String, dynamic>)).toList();
+      final posts =
+          items.map((p) => Post.fromJson(p as Map<String, dynamic>)).toList();
 
       setState(() {
         _allPosts = posts;
@@ -63,7 +67,9 @@ class _HomeScreenState extends State<HomeScreen> {
 
       return posts;
     } on ApiException catch (e) {
-      throw Exception(e.body is Map ? (e.body['message']?.toString() ?? e.body.toString()) : e.body.toString());
+      throw Exception(e.body is Map
+          ? (e.body['message']?.toString() ?? e.body.toString())
+          : e.body.toString());
     } catch (e) {
       throw Exception(e.toString());
     }
@@ -84,7 +90,8 @@ class _HomeScreenState extends State<HomeScreen> {
       });
 
       List items = [];
-      if (resp is Map && resp['posts'] is List) items = resp['posts'];
+      if (resp is Map && resp['posts'] is List)
+        items = resp['posts'];
       else if (resp is List) items = resp;
 
       if (items.isEmpty) {
@@ -92,7 +99,8 @@ class _HomeScreenState extends State<HomeScreen> {
           _hasMorePages = false;
         });
       } else {
-        final newPosts = items.map((p) => Post.fromJson(p as Map<String, dynamic>)).toList();
+        final newPosts =
+            items.map((p) => Post.fromJson(p as Map<String, dynamic>)).toList();
 
         setState(() {
           _allPosts.addAll(newPosts);
@@ -101,7 +109,6 @@ class _HomeScreenState extends State<HomeScreen> {
         });
       }
     } catch (e) {
-      
     } finally {
       setState(() {
         _isLoadingMore = false;
@@ -118,12 +125,14 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
-  List<Post> _applyFiltersToPosts(List<Post> posts, Map<String, dynamic> filters) {
+  List<Post> _applyFiltersToPosts(
+      List<Post> posts, Map<String, dynamic> filters) {
     if (filters.isEmpty) return posts;
 
     return posts.where((post) {
       if (filters['category'] != null &&
-          post.category.toLowerCase() != filters['category'].toString().toLowerCase()) {
+          post.category.toLowerCase() !=
+              filters['category'].toString().toLowerCase()) {
         return false;
       }
       if (filters['type'] != null &&
@@ -131,7 +140,8 @@ class _HomeScreenState extends State<HomeScreen> {
         return false;
       }
       if (filters['region'] != null &&
-          post.region.toLowerCase() != filters['region'].toString().toLowerCase()) {
+          post.region.toLowerCase() !=
+              filters['region'].toString().toLowerCase()) {
         return false;
       }
       if (filters['cost_below'] != null &&
@@ -181,55 +191,36 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final isDesktop = MediaQuery.of(context).size.width > 800;
+    final width = MediaQuery.of(context).size.width;
+    final gridMaxExtent = width < 420 ? width : (width < 760 ? 260.0 : 320.0);
+    final gridAspectRatio = width < 420 ? 0.76 : (width < 760 ? 0.8 : 0.96);
 
-    return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFD),
-      appBar: AppBar(
-        title: isDesktop
-            ? Center(
-              child: Text(
-                  'Discover Properties and get your dream home very fast in just few clicks and easy steps',
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 24,
-                    letterSpacing: 0.5,
-                  ),
-                ),
-            )
-            : Center(
-              child: const Text(
-                  'Discover Properties',
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 24,
-                    letterSpacing: 0.5,
-                  ),
-                ),
-            ),
-        flexibleSpace: Container(
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [const Color(0xFF1976D2), Color(0xFF2575FC)],
-            ),
-          ),
+    return AppShell(
+      currentRoute: '/home',
+      title: 'Discover Homes',
+      subtitle: 'Mobile-first browsing with fast filters',
+      icon: Iconsax.house_2,
+      actions: [
+        IconButton(
+          onPressed: _refresh,
+          tooltip: 'Refresh listings',
+          icon: const Icon(Iconsax.refresh),
         ),
-        foregroundColor: Colors.white,
-        elevation: 0,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.filter_list_rounded, size: 28),
-            onPressed: _showFilterDialog,
-            tooltip: 'Filter properties',
-          ),
-        ],
+        IconButton(
+          onPressed: _showFilterDialog,
+          tooltip: 'Filter properties',
+          icon: const Icon(Iconsax.filter),
+        ),
+      ],
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: _showFilterDialog,
+        icon: const Icon(Iconsax.filter),
+        label: const Text('Filter'),
       ),
-      drawer: const AppDrawer(),
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
       body: RefreshIndicator(
         onRefresh: _refresh,
-        color: const Color(0xFF1976D2),
+        color: AppColors.primary,
         backgroundColor: Colors.white,
         displacement: 40,
         edgeOffset: 20,
@@ -237,137 +228,88 @@ class _HomeScreenState extends State<HomeScreen> {
           controller: _scrollController,
           physics: const AlwaysScrollableScrollPhysics(),
           slivers: [
-            // Sticky Featured Properties Header
-            SliverPersistentHeader(
-              pinned: true,
-              floating: false,
-              delegate: _FeaturedPropertiesPersistentHeaderDelegate(),
+            SliverToBoxAdapter(
+              child: _buildHeroSection(width),
             ),
             if (_currentFilters.isNotEmpty)
               SliverToBoxAdapter(
-                child: Column(
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(12),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.grey.withOpacity(0.2),
-                            blurRadius: 8,
-                            offset: const Offset(0, 2),
-                          ),
-                        ],
-                      ),
-                      child: Row(
-                        children: [
-                          const Icon(Icons.filter_alt_rounded, size: 20, color: const Color(0xFF1976D2)),
-                          const SizedBox(width: 8),
-                          Expanded(
-                            child: Text(
-                              'Filters: ${_currentFilters.entries.map((e) => '${e.key}: ${e.value}').join(', ')}',
-                              style: const TextStyle(fontSize: 14, color: Color(0xFF2D3748)),
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-                          TextButton.icon(
-                            onPressed: () {
-                              setState(() {
-                                _currentFilters = {};
-                                _filteredPosts = _allPosts;
-                              });
-                            },
-                            icon: const Icon(Icons.clear, size: 16, color: Colors.red),
-                            label: const Text('Clear', style: TextStyle(color: Colors.red)),
-                          ),
-                        ],
-                      ),
-                    )
-                    .animate()
-                    .fadeIn(duration: 600.ms)
-                    .slide(begin: const Offset(0, -0.2), duration: 400.ms),
-                  ],
-                ),
+                child: _buildActiveFilters(),
               ),
-
-            // Houses Section Title
             SliverToBoxAdapter(
               child: Padding(
-                padding: const EdgeInsets.fromLTRB(16, 16, 16, 12),
+                padding: const EdgeInsets.only(top: 24, bottom: 14),
                 child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Row(
-                      children: [
-                        // Container(
-                        //   padding: const EdgeInsets.all(10),
-                        //   decoration: BoxDecoration(
-                        //     gradient: const LinearGradient(
-                        //       colors: [const Color(0xFF1976D2), Color(0xFF2575FC)],
-                        //     ),
-                        //     shape: BoxShape.circle,
-                        //   ),
-                        //   child: const Icon(Icons.home_rounded, color: Colors.white, size: 24),
-                        // ),
-
-                 
-                        
-                      ],
+                    Expanded(
+                      child: Text(
+                        'Latest listings',
+                        style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                              fontWeight: FontWeight.w800,
+                            ),
+                      ),
+                    ),
+                    Text(
+                      '${_filteredPosts.length} results',
+                      style: const TextStyle(
+                        color: AppColors.mutedText,
+                        fontWeight: FontWeight.w700,
+                      ),
                     ),
                   ],
                 ),
               ),
             ),
-
-            // Houses List
             SliverPadding(
-              padding: EdgeInsets.symmetric(
-                horizontal: MediaQuery.of(context).size.width > 600 ? 16 : 8,
-              ),
+              padding: const EdgeInsets.only(bottom: 12),
               sliver: FutureBuilder<List<Post>>(
                 future: _postsFuture,
                 builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
+                  if (snapshot.connectionState == ConnectionState.waiting &&
+                      _filteredPosts.isEmpty) {
                     return _buildStateMessage(
                       icon: const CircularProgressIndicator(
                         strokeWidth: 4,
-                        valueColor: AlwaysStoppedAnimation<Color>(const Color(0xFF1976D2)),
+                        valueColor:
+                            AlwaysStoppedAnimation<Color>(AppColors.primary),
                       ),
-                      message: 'Loading properties...',
-                      color: const Color(0xFF1976D2),
+                      message: 'Loading fresh listings...',
+                      color: AppColors.primary,
                     );
                   } else if (snapshot.hasError) {
-              
                     return _buildStateMessage(
-                      icon: const Icon(Icons.error_outline_rounded, size: 70, color: Color.fromARGB(255, 7, 11, 212)),
-                      message: 'Error loading properties something went wrong so plaese try again letter ',
-                      // subMessage: '${snapshot.error}',
-                      subMessage: 'sever is now down for temporary',
-                      color: const Color.fromARGB(255, 9, 6, 231),
+                      icon: const Icon(
+                        Iconsax.warning_2,
+                        size: 64,
+                        color: AppColors.primary,
+                      ),
+                      message: 'Listings are temporarily unavailable',
+                      subMessage: 'Pull to refresh or try again shortly.',
+                      color: AppColors.primary,
                     );
                   } else if (!snapshot.hasData || _filteredPosts.isEmpty) {
                     return _buildStateMessage(
-                      icon: const Icon(Icons.home_outlined, size: 48, color: Color(0xFF1976D2)),
+                      icon: const Icon(
+                        Iconsax.home_1,
+                        size: 52,
+                        color: AppColors.primary,
+                      ),
                       message: 'No properties found',
                       subMessage: _currentFilters.isEmpty
-                          ? 'Check back later for new listings'
-                          : 'Try adjusting your filters',
-                      color: const Color(0xFF1976D2),
+                          ? 'New homes will appear here as they are verified.'
+                          : 'Adjust your filters to widen the search.',
+                      color: AppColors.primary,
                     );
                   } else {
                     return SliverGrid(
-                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: MediaQuery.of(context).size.width > 600 ? 3 : 2,
-                        mainAxisSpacing: 10,
-                        crossAxisSpacing: 10,
-                        childAspectRatio: MediaQuery.of(context).size.width > 600 ? 0.85 : 0.75,
+                      gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+                        maxCrossAxisExtent: gridMaxExtent,
+                        mainAxisSpacing: 14,
+                        crossAxisSpacing: 14,
+                        childAspectRatio: gridAspectRatio,
                       ),
                       delegate: SliverChildBuilderDelegate(
-                        (context, index) {
-                          return HouseCard(post: _filteredPosts[index]);
-                        },
+                        (context, index) =>
+                            HouseCard(post: _filteredPosts[index]),
                         childCount: _filteredPosts.length,
                       ),
                     );
@@ -375,122 +317,321 @@ class _HomeScreenState extends State<HomeScreen> {
                 },
               ),
             ),
-
-            // Loading indicator for pagination
             if (_isLoadingMore)
-              SliverToBoxAdapter(
-                child: Container(
-                  padding: const EdgeInsets.all(16),
-                  child: const Center(
+              const SliverToBoxAdapter(
+                child: Padding(
+                  padding: EdgeInsets.all(16),
+                  child: Center(
                     child: CircularProgressIndicator(
-                      valueColor: AlwaysStoppedAnimation<Color>(const Color(0xFF1976D2)),
+                      valueColor:
+                          AlwaysStoppedAnimation<Color>(AppColors.primary),
                     ),
                   ),
                 ),
               ),
-
-            // End of list message
             if (!_hasMorePages && _filteredPosts.isNotEmpty)
-              SliverToBoxAdapter(
-                child: Container(
-                  padding: const EdgeInsets.all(16),
-                  child: const Center(
+              const SliverToBoxAdapter(
+                child: Padding(
+                  padding: EdgeInsets.symmetric(vertical: 8),
+                  child: Center(
                     child: Text(
-                      'No more properties to load',
-                      style: TextStyle(color: Colors.grey, fontSize: 16),
-                    ),
-                  ),
-                ),
-              ),
-
-            // Agents Section
-            SliverToBoxAdapter(
-              child: Container(
-                margin: EdgeInsets.symmetric(
-                  horizontal: MediaQuery.of(context).size.width > 600 ? 16 : 16,
-                  vertical: 24,
-                ),
-                padding: const EdgeInsets.all(24),
-                decoration: BoxDecoration(
-                  gradient: const LinearGradient(
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                    colors: [const Color(0xFF1976D2), Color(0xFF2575FC)],
-                  ),
-                  borderRadius: BorderRadius.circular(20),
-                  boxShadow: [
-                    BoxShadow(
-                      color: const Color(0xFF1976D2).withOpacity(0.3),
-                      blurRadius: 15,
-                      offset: const Offset(0, 5),
-                    ),
-                  ],
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: const [
-                        Icon(Icons.group_rounded, color: Colors.white, size: 28),
-                        SizedBox(width: 12),
-                        Text(
-                          'Connect With Experts',
-                          style: TextStyle(
-                            fontSize: 22,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 12),
-                    const Text(
-                      'Our professional agents are ready to help you find your perfect home',
+                      'You have reached the end of the current listings.',
                       style: TextStyle(
-                        fontSize: 16,
-                        color: Colors.white70,
-                        height: 1.5,
+                        color: AppColors.mutedText,
+                        fontWeight: FontWeight.w700,
                       ),
                     ),
-                    const SizedBox(height: 20),
-                    SizedBox(
-                      width: MediaQuery.of(context).size.width > 600 ? 200 : 150,
-                      child: ElevatedButton.icon(
-                        onPressed: () => Navigator.pushNamed(context, '/agents'),
-                        icon: const Icon(Icons.arrow_forward_rounded, color: const Color(0xFF1976D2)),
-                        label: const Text(
-                          'Browse Agents',
-                          style: TextStyle(
-                            fontWeight: FontWeight.w600,
-                            color: const Color(0xFF1976D2),
-                            fontSize: 16,
-                          ),
-                        ),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.white,
-                          padding: const EdgeInsets.symmetric(vertical: 16),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          elevation: 0,
-                        ),
-                      ),
-                    ),
-                  ],
+                  ),
                 ),
               ),
+            SliverToBoxAdapter(
+              child: _buildAgentsPanel(context),
             ),
-            const SliverToBoxAdapter(child: SizedBox(height: 80)),
+            const SliverToBoxAdapter(child: SizedBox(height: 110)),
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _showFilterDialog,
-        backgroundColor: const Color(0xFF1976D2),
-        child: const Icon(Icons.search_rounded, color: Colors.white),
-        tooltip: 'Quick Search',
+    );
+  }
+
+  Widget _buildHeroSection(double width) {
+    final isCompact = width < 420;
+
+    return Container(
+      padding: EdgeInsets.all(isCompact ? 18 : 24),
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [AppColors.primary, AppColors.secondary],
+        ),
+        borderRadius: BorderRadius.circular(28),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.primary.withOpacity(0.22),
+            blurRadius: 24,
+            offset: const Offset(0, 14),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Wrap(
+            spacing: 10,
+            runSpacing: 10,
+            crossAxisAlignment: WrapCrossAlignment.center,
+            children: [
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.16),
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: const Icon(
+                  Iconsax.flash_1,
+                  color: Colors.white,
+                  size: 22,
+                ),
+              ),
+              const Text(
+                'Find a verified home faster',
+                style: TextStyle(
+                  fontSize: 24,
+                  height: 1.1,
+                  fontWeight: FontWeight.w800,
+                  color: Colors.white,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Text(
+            'Browse mobile-ready cards, filter by region instantly, and jump from discovery to agent contact in a few taps.',
+            style: TextStyle(
+              fontSize: 14,
+              height: 1.5,
+              color: Colors.white.withOpacity(0.88),
+            ),
+          ),
+          const SizedBox(height: 18),
+          Wrap(
+            spacing: 10,
+            runSpacing: 10,
+            children: [
+              _buildHeroMetric(
+                icon: Iconsax.home_2,
+                label: 'Available',
+                value: _allPosts.length.toString(),
+              ),
+              _buildHeroMetric(
+                icon: Iconsax.filter,
+                label: 'Filtered',
+                value: _filteredPosts.length.toString(),
+              ),
+              _buildHeroMetric(
+                icon: Iconsax.refresh,
+                label: 'Page',
+                value: _currentPage.toString(),
+              ),
+            ],
+          ),
+          const SizedBox(height: 18),
+          Wrap(
+            spacing: 10,
+            runSpacing: 10,
+            children: [
+              ElevatedButton.icon(
+                onPressed: _showFilterDialog,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.white,
+                  foregroundColor: AppColors.primary,
+                ),
+                icon: const Icon(Iconsax.filter),
+                label: const Text('Quick filters'),
+              ),
+              OutlinedButton.icon(
+                onPressed: _refresh,
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: Colors.white,
+                  side: BorderSide(color: Colors.white.withOpacity(0.35)),
+                ),
+                icon: const Icon(Iconsax.refresh),
+                label: const Text('Reload'),
+              ),
+            ],
+          ),
+        ],
+      ),
+    ).animate().fadeIn(duration: 400.ms).slideY(begin: -0.06, duration: 500.ms);
+  }
+
+  Widget _buildHeroMetric({
+    required IconData icon,
+    required String label,
+    required String value,
+  }) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.14),
+        borderRadius: BorderRadius.circular(18),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 16, color: Colors.white),
+          const SizedBox(width: 8),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                value,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w800,
+                  fontSize: 16,
+                ),
+              ),
+              Text(
+                label,
+                style: TextStyle(
+                  color: Colors.white.withOpacity(0.82),
+                  fontWeight: FontWeight.w600,
+                  fontSize: 11,
+                ),
+              ),
+            ],
+          ),
+        ],
       ),
     );
+  }
+
+  Widget _buildActiveFilters() {
+    return Container(
+      margin: const EdgeInsets.only(top: 18),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(22),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.primary.withOpacity(0.08),
+            blurRadius: 18,
+            offset: const Offset(0, 8),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              const Icon(Iconsax.filter, color: AppColors.primary, size: 18),
+              const SizedBox(width: 8),
+              const Text(
+                'Active filters',
+                style: TextStyle(
+                  color: AppColors.text,
+                  fontWeight: FontWeight.w800,
+                ),
+              ),
+              const Spacer(),
+              TextButton(
+                onPressed: () {
+                  setState(() {
+                    _currentFilters = {};
+                    _filteredPosts = _allPosts;
+                  });
+                },
+                child: const Text('Clear all'),
+              ),
+            ],
+          ),
+          const SizedBox(height: 10),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: _currentFilters.entries
+                .map(
+                  (entry) => Chip(
+                    avatar: const Icon(
+                      Iconsax.tag,
+                      size: 15,
+                      color: AppColors.primary,
+                    ),
+                    label: Text('${entry.key}: ${entry.value}'),
+                  ),
+                )
+                .toList(),
+          ),
+        ],
+      ),
+    ).animate().fadeIn(duration: 350.ms).slideY(begin: -0.04, duration: 350.ms);
+  }
+
+  Widget _buildAgentsPanel(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.only(top: 28),
+      padding: const EdgeInsets.all(22),
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [Color(0xFF0E7CA6), Color(0xFF2AA6C9)],
+        ),
+        borderRadius: BorderRadius.circular(26),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.secondary.withOpacity(0.22),
+            blurRadius: 22,
+            offset: const Offset(0, 12),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: const [
+              Icon(Iconsax.profile_2user, color: Colors.white, size: 24),
+              SizedBox(width: 10),
+              Expanded(
+                child: Text(
+                  'Need help choosing?',
+                  style: TextStyle(
+                    fontSize: 22,
+                    fontWeight: FontWeight.w800,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 10),
+          Text(
+            'Open the agent directory to contact verified experts and move faster from browsing to booking.',
+            style: TextStyle(
+              fontSize: 14,
+              height: 1.5,
+              color: Colors.white.withOpacity(0.84),
+            ),
+          ),
+          const SizedBox(height: 18),
+          ElevatedButton.icon(
+            onPressed: () => Navigator.pushNamed(context, '/agents'),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.white,
+              foregroundColor: AppColors.primary,
+            ),
+            icon: const Icon(Iconsax.arrow_right_3),
+            label: const Text('Browse agents'),
+          ),
+        ],
+      ),
+    ).animate().fadeIn(delay: 150.ms, duration: 450.ms).slideY(begin: 0.05);
   }
 
   Widget _buildStateMessage({
@@ -503,8 +644,8 @@ class _HomeScreenState extends State<HomeScreen> {
       child: Container(
         alignment: Alignment.center,
         margin: EdgeInsets.symmetric(
-          horizontal: MediaQuery.of(context).size.width > 600 ? 32 : 16,
-          vertical:MediaQuery.of(context).size.height *0.17,
+          horizontal: MediaQuery.of(context).size.width > 600 ? 32 : 0,
+          vertical: MediaQuery.of(context).size.height * 0.1,
         ),
         padding: const EdgeInsets.all(24),
         decoration: BoxDecoration(
@@ -546,53 +687,5 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       ),
     );
-  }
-}
-
-class _FeaturedPropertiesPersistentHeaderDelegate
-    extends SliverPersistentHeaderDelegate {
-  @override
-  Widget build(
-      BuildContext context, double shrinkOffset, bool overlapsContent) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-      decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          colors: [Colors.white, Colors.white],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        borderRadius: BorderRadius.circular(0),
-        boxShadow: [
-          BoxShadow(
-            color: const Color(0xFF1976D2).withOpacity(0.15),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Center(
-        child: Text(
-            'Featured Properties Available',
-          style: const TextStyle(
-            fontSize: 24,
-            fontWeight: FontWeight.w600,
-            color: Color.fromARGB(255, 5, 130, 219),
-            fontStyle: FontStyle.italic
-          ),
-        ),
-      ),
-    );
-  }
-
-  @override
-  double get maxExtent => 80;
-
-  @override
-  double get minExtent => 60;
-
-  @override
-  bool shouldRebuild(_FeaturedPropertiesPersistentHeaderDelegate oldDelegate) {
-    return false;
   }
 }

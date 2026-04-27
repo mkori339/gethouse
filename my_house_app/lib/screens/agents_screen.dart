@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:my_house_app/widgets/app_drawer.dart';
+import 'package:my_house_app/theme.dart';
+import 'package:my_house_app/widgets/app_shell.dart';
 import '../models/agent.dart';
 import '../widgets/agent_card.dart';
 import '../widgets/agent_filter.dart';
@@ -19,7 +20,6 @@ class _AgentsScreenState extends State<AgentsScreen> {
   List<Agent> _allAgents = [];
   List<Agent> _filteredAgents = [];
   String? _currentFilter;
-  bool _isRefreshing = false;
 
   @override
   void initState() {
@@ -31,43 +31,50 @@ class _AgentsScreenState extends State<AgentsScreen> {
     try {
       final resp = await ApiService.get('/api/agents');
       List items = [];
-      if (resp is Map && resp['agents'] is List) items = resp['agents'];
-      else if (resp is List) items = resp;
-      
-      final agents = items.map((a) => Agent.fromJson(a as Map<String, dynamic>)).toList();
-      
+      if (resp is Map && resp['agents'] is List) {
+        items = resp['agents'];
+      } else if (resp is List) {
+        items = resp;
+      }
+
+      final agents =
+          items.map((a) => Agent.fromJson(a as Map<String, dynamic>)).toList();
+
       setState(() {
         _allAgents = agents;
         _filteredAgents = agents;
       });
-      
+
       return agents;
     } on ApiException catch (e) {
-      throw Exception(e.body is Map ? (e.body['message']?.toString() ?? e.body.toString()) : e.body.toString());
+      throw Exception(e.body is Map
+          ? (e.body['message']?.toString() ?? e.body.toString())
+          : e.body.toString());
     } catch (e) {
       throw Exception(e.toString());
     }
   }
 
- void _applyFilter(String? region) {
-  setState(() {
-    _currentFilter = region;
-    if (region == null || region.isEmpty) {
-      _filteredAgents = _allAgents;
-    } else {
-      _filteredAgents = _allAgents.where((agent) => 
-        agent.region?.toLowerCase().trim() == region.toLowerCase().trim()
-      ).toList();
-    }
-  });
-
-}
+  void _applyFilter(String? region) {
+    setState(() {
+      _currentFilter = region;
+      if (region == null || region.isEmpty) {
+        _filteredAgents = _allAgents;
+      } else {
+        _filteredAgents = _allAgents
+            .where((agent) =>
+                agent.region.toLowerCase().trim() ==
+                region.toLowerCase().trim())
+            .toList();
+      }
+    });
+  }
 
   void _showFilterDialog() {
     // Get unique regions from agents, handling null values
     final regions = _allAgents
-        .map((agent) => agent.region?.trim())
-        .where((region) => region != null && region.isNotEmpty)
+        .map((agent) => agent.region.trim())
+        .where((region) => region.isNotEmpty)
         .toSet()
         .toList()
         .cast<String>();
@@ -100,93 +107,107 @@ class _AgentsScreenState extends State<AgentsScreen> {
   }
 
   Future<void> _refresh() async {
-    setState(() { 
-      _isRefreshing = true;
-    });
-    
     await _fetchAgents();
-    
-    setState(() { 
+
+    setState(() {
       _currentFilter = null;
-      _isRefreshing = false;
     });
   }
 
   @override
   Widget build(BuildContext context) {
     final isDesktop = MediaQuery.of(context).size.width > 800;
-    
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text(
-          'Featured Properties ',
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            fontSize: 24,
-          ),
-        ),
-        backgroundColor: const Color(0xFF1976D2),
-        foregroundColor: Colors.white,
-        elevation: 0,
-        shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.vertical(
-            bottom: Radius.circular(0),
-          ),
-        ),
-        actions: [
-          IconButton(
-            icon: const Icon(Iconsax.filter, size: 24),
-            onPressed: _showFilterDialog,
-            tooltip: 'Filter agents',
-          )
-          .animate()
-          .scale(delay: 200.ms, duration: 600.ms),
-          
-          IconButton(
-            icon: const Icon(Iconsax.refresh, size: 24),
-            onPressed: _refresh,
-            tooltip: 'Refresh',
-          )
-          .animate()
-          .scale(delay: 300.ms, duration: 600.ms),
-        ],
+
+    return AppShell(
+      currentRoute: '/agents',
+      title: 'Verified Agents',
+      subtitle: 'Find local experts and contact them fast',
+      icon: Iconsax.profile_2user,
+      actions: [
+        IconButton(
+          icon: const Icon(Iconsax.filter),
+          onPressed: _showFilterDialog,
+          tooltip: 'Filter agents',
+        ).animate().scale(delay: 200.ms, duration: 600.ms),
+        IconButton(
+          icon: const Icon(Iconsax.refresh),
+          onPressed: _refresh,
+          tooltip: 'Refresh',
+        ).animate().scale(delay: 300.ms, duration: 600.ms),
+      ],
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: _showFilterDialog,
+        icon: const Icon(Iconsax.filter),
+        label: const Text('Region'),
       ),
-      drawer: const AppDrawer(),
-      body: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [
-              Color(0xFFF8FAFD),
-              Colors.white,
-            ],
-          ),
-        ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+      body: SizedBox.expand(
         child: RefreshIndicator(
           onRefresh: _refresh,
-          color: const Color(0xFF1976D2),
+          color: AppColors.primary,
           backgroundColor: Colors.white,
           child: Column(
             children: [
-              // Filter indicator with animation
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  gradient: const LinearGradient(
+                    colors: [AppColors.primary, AppColors.secondary],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                  borderRadius: BorderRadius.circular(26),
+                  boxShadow: [
+                    BoxShadow(
+                      color: AppColors.primary.withOpacity(0.16),
+                      blurRadius: 20,
+                      offset: const Offset(0, 10),
+                    ),
+                  ],
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'Reach an agent in a few taps',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 24,
+                        fontWeight: FontWeight.w800,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      'Search by region, scan compact cards, and open WhatsApp directly from each listing.',
+                      style: TextStyle(
+                        color: Colors.white.withOpacity(0.84),
+                        height: 1.5,
+                      ),
+                    ),
+                  ],
+                ),
+              )
+                  .animate()
+                  .fadeIn(duration: 350.ms)
+                  .slideY(begin: -0.04, duration: 400.ms),
               if (_currentFilter != null)
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                  margin: const EdgeInsets.all(16),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                  margin: const EdgeInsets.only(top: 16),
                   decoration: BoxDecoration(
                     color: Colors.white,
-                    borderRadius: BorderRadius.circular(16),
+                    borderRadius: BorderRadius.circular(18),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.grey.withOpacity(0.1),
-                        blurRadius: 10,
-                        offset: const Offset(0, 3),
+                        color: AppColors.primary.withOpacity(0.08),
+                        blurRadius: 16,
+                        offset: const Offset(0, 8),
                       ),
                     ],
                     border: Border.all(
-                      color: const Color(0xFF1976D2).withOpacity(0.2),
-                      width: 1.5,
+                      color: AppColors.primary.withOpacity(0.14),
                     ),
                   ),
                   child: Row(
@@ -195,25 +216,29 @@ class _AgentsScreenState extends State<AgentsScreen> {
                         width: 32,
                         height: 32,
                         decoration: BoxDecoration(
-                          color: const Color(0xFF1976D2).withOpacity(0.1),
+                          color: AppColors.primary.withOpacity(0.1),
                           shape: BoxShape.circle,
                         ),
-                        child: const Icon(Iconsax.filter, size: 18, color: Color(0xFF1976D2)),
+                        child: const Icon(
+                          Iconsax.location,
+                          size: 18,
+                          color: AppColors.primary,
+                        ),
                       ),
                       const SizedBox(width: 12),
                       Expanded(
                         child: Text(
-                          'Filter: $_currentFilter',
+                          'Region: $_currentFilter',
                           style: const TextStyle(
                             fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                            color: Color(0xFF1976D2),
+                            fontWeight: FontWeight.w700,
+                            color: AppColors.primary,
                           ),
                           overflow: TextOverflow.ellipsis,
                         ),
                       ),
                       IconButton(
-                        icon: const Icon(Icons.close, size: 20, color: Colors.red),
+                        icon: const Icon(Icons.close, size: 20),
                         onPressed: () {
                           setState(() {
                             _currentFilter = null;
@@ -225,27 +250,25 @@ class _AgentsScreenState extends State<AgentsScreen> {
                     ],
                   ),
                 )
-                .animate()
-                .fadeIn(duration: 600.ms)
-                .slide(begin: const Offset(0, -0.2), duration: 400.ms),
-              
-              // Stats overview
-              const SizedBox(height: 8),
+                    .animate()
+                    .fadeIn(duration: 350.ms)
+                    .slideY(begin: -0.04, duration: 350.ms),
+              const SizedBox(height: 16),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-                margin: const EdgeInsets.symmetric(horizontal: 16),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
                 decoration: BoxDecoration(
                   gradient: const LinearGradient(
-                    colors: [Color(0xFF1976D2), Color(0xFF2575FC)],
+                    colors: [AppColors.primary, AppColors.secondary],
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                   ),
                   borderRadius: BorderRadius.circular(20),
                   boxShadow: [
                     BoxShadow(
-                      color: const Color(0xFF1976D2).withOpacity(0.3),
-                      blurRadius: 15,
-                      offset: const Offset(0, 5),
+                      color: AppColors.primary.withOpacity(0.18),
+                      blurRadius: 18,
+                      offset: const Offset(0, 8),
                     ),
                   ],
                 ),
@@ -255,30 +278,32 @@ class _AgentsScreenState extends State<AgentsScreen> {
                     _buildStatItem(
                       icon: Iconsax.profile_2user,
                       value: _allAgents.length.toString(),
-                      label: 'Total Agents',
+                      label: 'Verified',
                       delay: 400.ms,
                     ),
                     _buildStatItem(
                       icon: Iconsax.location,
-                      value: _allAgents.map((a) => a.region).toSet().length.toString(),
+                      value: _allAgents
+                          .map((a) => a.region)
+                          .toSet()
+                          .length
+                          .toString(),
                       label: 'Regions',
                       delay: 500.ms,
                     ),
                     _buildStatItem(
-                      icon: Iconsax.star,
-                      value: '4.8',
-                      label: 'Avg Rating',
+                      icon: Iconsax.status,
+                      value: _currentFilter?.toUpperCase() ?? 'LIVE',
+                      label: 'Focus',
                       delay: 600.ms,
                     ),
                   ],
                 ),
               )
-              .animate()
-              .fadeIn(delay: 300.ms, duration: 600.ms)
-              .scale(begin: const Offset(0.9, 0.9), duration: 600.ms),
-              
+                  .animate()
+                  .fadeIn(delay: 300.ms, duration: 600.ms)
+                  .scale(begin: const Offset(0.9, 0.9), duration: 600.ms),
               const SizedBox(height: 16),
-              
               Expanded(
                 child: FutureBuilder<List<Agent>>(
                   future: _agentsFuture,
@@ -286,7 +311,9 @@ class _AgentsScreenState extends State<AgentsScreen> {
                     if (snapshot.connectionState == ConnectionState.waiting) {
                       return const Center(
                         child: CircularProgressIndicator(
-                          valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF1976D2)),
+                          valueColor: AlwaysStoppedAnimation<Color>(
+                            AppColors.primary,
+                          ),
                         ),
                       );
                     } else if (snapshot.hasError) {
@@ -294,23 +321,31 @@ class _AgentsScreenState extends State<AgentsScreen> {
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            const Icon(Iconsax.warning_2, size: 64, color: Colors.orange),
+                            const Icon(
+                              Iconsax.warning_2,
+                              size: 64,
+                              color: AppColors.accent,
+                            ),
                             const SizedBox(height: 16),
                             Text(
                               'Error loading agents',
                               style: TextStyle(
                                 fontSize: 18,
                                 color: Colors.grey[700],
-                                fontWeight: FontWeight.w600,
+                                fontWeight: FontWeight.w700,
                               ),
                             ),
                             const SizedBox(height: 8),
-                            Text(
-                              '${snapshot.error}',
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                fontSize: 14,
-                                color: Colors.grey[600],
+                            Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 20),
+                              child: Text(
+                                '${snapshot.error}',
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  color: Colors.grey[600],
+                                ),
                               ),
                             ),
                             const SizedBox(height: 20),
@@ -318,14 +353,6 @@ class _AgentsScreenState extends State<AgentsScreen> {
                               onPressed: _refresh,
                               icon: const Icon(Iconsax.refresh),
                               label: const Text('Try Again'),
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: const Color(0xFF1976D2),
-                                foregroundColor: Colors.white,
-                                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                              ),
                             ),
                           ],
                         ),
@@ -335,24 +362,28 @@ class _AgentsScreenState extends State<AgentsScreen> {
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            const Icon(Iconsax.profile_2user, size: 80, color: Colors.grey),
+                            const Icon(
+                              Iconsax.profile_2user,
+                              size: 80,
+                              color: AppColors.mutedText,
+                            ),
                             const SizedBox(height: 16),
                             Text(
-                              _currentFilter == null 
-                                ? 'No agents available' 
-                                : 'No agents found in $_currentFilter',
+                              _currentFilter == null
+                                  ? 'No agents available'
+                                  : 'No agents found in $_currentFilter',
                               style: TextStyle(
                                 fontSize: 18,
                                 color: Colors.grey[600],
-                                fontWeight: FontWeight.w600,
+                                fontWeight: FontWeight.w700,
                               ),
                             ),
                             const SizedBox(height: 8),
                             const Text(
-                              'Check back later for new agents',
+                              'Check back later for new agents.',
                               style: TextStyle(
                                 fontSize: 14,
-                                color: Colors.grey,
+                                color: AppColors.mutedText,
                               ),
                             ),
                             const SizedBox(height: 20),
@@ -364,14 +395,6 @@ class _AgentsScreenState extends State<AgentsScreen> {
                                     _filteredAgents = _allAgents;
                                   });
                                 },
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: const Color(0xFF1976D2),
-                                  foregroundColor: Colors.white,
-                                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(12),
-                                  ),
-                                ),
                                 child: const Text('Clear Filter'),
                               ),
                           ],
@@ -380,23 +403,27 @@ class _AgentsScreenState extends State<AgentsScreen> {
                     } else {
                       return GridView.builder(
                         padding: EdgeInsets.symmetric(
-                          horizontal: isDesktop ? 24 : 12,
-                          vertical: 16,
+                          horizontal: isDesktop ? 12 : 2,
+                          vertical: 8,
                         ),
                         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                           crossAxisCount: isDesktop ? 3 : 2,
-                          crossAxisSpacing: isDesktop ? 20 : 12,
-                          mainAxisSpacing: 20,
-                          childAspectRatio: isDesktop ? 1.5 : 1.1,
+                          crossAxisSpacing: isDesktop ? 18 : 12,
+                          mainAxisSpacing: 18,
+                          childAspectRatio: isDesktop ? 1.5 : 1.12,
                         ),
                         itemCount: _filteredAgents.length,
                         itemBuilder: (context, index) {
-                          return AgentCard(
-                            agent: _filteredAgents[index],
-                          )
-                          .animate()
-                          .fadeIn(delay: (100 * index).ms, duration: 600.ms)
-                          .scale(begin: const Offset(0.9, 0.9), duration: 600.ms);
+                          return AgentCard(agent: _filteredAgents[index])
+                              .animate()
+                              .fadeIn(
+                                delay: (100 * index).ms,
+                                duration: 600.ms,
+                              )
+                              .scale(
+                                begin: const Offset(0.9, 0.9),
+                                duration: 600.ms,
+                              );
                         },
                       );
                     }
@@ -410,7 +437,11 @@ class _AgentsScreenState extends State<AgentsScreen> {
     );
   }
 
-  Widget _buildStatItem({required IconData icon, required String value, required String label, Duration delay = Duration.zero}) {
+  Widget _buildStatItem(
+      {required IconData icon,
+      required String value,
+      required String label,
+      Duration delay = Duration.zero}) {
     return Column(
       children: [
         Container(
@@ -425,12 +456,8 @@ class _AgentsScreenState extends State<AgentsScreen> {
             ),
           ),
           child: Icon(icon, color: Colors.white, size: 24),
-        )
-        .animate()
-        .scale(delay: delay, duration: 600.ms),
-        
+        ).animate().scale(delay: delay, duration: 600.ms),
         const SizedBox(height: 8),
-        
         Text(
           value,
           style: const TextStyle(
@@ -438,19 +465,14 @@ class _AgentsScreenState extends State<AgentsScreen> {
             fontWeight: FontWeight.bold,
             color: Colors.white,
           ),
-        )
-        .animate()
-        .fadeIn(delay: delay + 100.ms, duration: 600.ms),
-        
+        ).animate().fadeIn(delay: delay + 100.ms, duration: 600.ms),
         Text(
           label,
           style: TextStyle(
             fontSize: 12,
             color: Colors.white.withOpacity(0.9),
           ),
-        )
-        .animate()
-        .fadeIn(delay: delay + 200.ms, duration: 600.ms),
+        ).animate().fadeIn(delay: delay + 200.ms, duration: 600.ms),
       ],
     );
   }
