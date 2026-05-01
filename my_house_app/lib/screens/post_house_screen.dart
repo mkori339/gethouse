@@ -254,8 +254,17 @@ class _PostHouseScreenState extends State<PostHouseScreen> {
       }
     } catch (e) {
       if (mounted) {
+        // Handle socket/network errors more gracefully
+        String message = e.toString();
+        if (message.contains('SocketException') || 
+            message.contains('Connection reset') ||
+            message.contains('Connection refused') ||
+            message.contains('HandshakeException') ||
+            message.contains('CERTIFICATE')) {
+          message = 'Unable to connect to server. Please check your internet connection and try again.';
+        }
         setState(() {
-          _error = e.toString();
+          _error = message;
         });
       }
     } finally {

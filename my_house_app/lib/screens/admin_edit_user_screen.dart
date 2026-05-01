@@ -142,7 +142,16 @@ class _AdminEditUserScreenState extends State<AdminEditUserScreen> with TickerPr
       });
     } catch (e) {
       setState(() {
-        _error = e.toString();
+        // Handle socket/network errors more gracefully
+        String message = e.toString();
+        if (message.contains('SocketException') || 
+            message.contains('Connection reset') ||
+            message.contains('Connection refused') ||
+            message.contains('HandshakeException') ||
+            message.contains('CERTIFICATE')) {
+          message = 'Unable to connect to server. Please check your internet connection and try again.';
+        }
+        _error = message;
       });
     } finally {
       setState(() {
@@ -234,8 +243,17 @@ class _AdminEditUserScreenState extends State<AdminEditUserScreen> with TickerPr
       }
     } catch (e) {
       if (mounted) {
+        // Handle socket/network errors more gracefully
+        String message = e.toString();
+        if (message.contains('SocketException') || 
+            message.contains('Connection reset') ||
+            message.contains('Connection refused') ||
+            message.contains('HandshakeException') ||
+            message.contains('CERTIFICATE')) {
+          message = 'Unable to connect to server. Please check your internet connection and try again.';
+        }
         setState(() {
-          _error = e.toString();
+          _error = message;
         });
       }
     } finally {
@@ -316,8 +334,17 @@ class _AdminEditUserScreenState extends State<AdminEditUserScreen> with TickerPr
       }
     } catch (e) {
       if (mounted) {
+        // Handle socket/network errors more gracefully
+        String message = e.toString();
+        if (message.contains('SocketException') || 
+            message.contains('Connection reset') ||
+            message.contains('Connection refused') ||
+            message.contains('HandshakeException') ||
+            message.contains('CERTIFICATE')) {
+          message = 'Unable to connect to server. Please check your internet connection and try again.';
+        }
         setState(() {
-          _error = e.toString();
+          _error = message;
         });
       }
     } finally {

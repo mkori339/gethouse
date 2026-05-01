@@ -84,7 +84,16 @@ class _AdminReportsScreenState extends State<AdminReportsScreen> with TickerProv
       });
     } catch (e) {
       setState(() {
-        _error = e.toString();
+        // Handle socket/network errors more gracefully
+        String message = e.toString();
+        if (message.contains('SocketException') || 
+            message.contains('Connection reset') ||
+            message.contains('Connection refused') ||
+            message.contains('HandshakeException') ||
+            message.contains('CERTIFICATE')) {
+          message = 'Unable to connect to server. Please check your internet connection and try again.';
+        }
+        _error = message;
       });
     } finally {
       setState(() {
@@ -178,9 +187,18 @@ class _AdminReportsScreenState extends State<AdminReportsScreen> with TickerProv
       }
     } catch (e) {
       if (mounted) {
+        // Handle socket/network errors more gracefully
+        String message = e.toString();
+        if (message.contains('SocketException') || 
+            message.contains('Connection reset') ||
+            message.contains('Connection refused') ||
+            message.contains('HandshakeException') ||
+            message.contains('CERTIFICATE')) {
+          message = 'Unable to connect to server. Please check your internet connection and try again.';
+        }
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Error: $e'),
+            content: Text('Error: $message'),
             backgroundColor: const Color(0xFFE53E3E),
             duration: const Duration(seconds: 3),
             behavior: SnackBarBehavior.floating,

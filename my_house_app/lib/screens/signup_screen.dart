@@ -151,8 +151,17 @@ class _SignupScreenState extends State<SignupScreen> {
       }
     } catch (e) {
       if (mounted) {
+        // Handle socket/network errors more gracefully
+        String message = e.toString();
+        if (message.contains('SocketException') || 
+            message.contains('Connection reset') ||
+            message.contains('Connection refused') ||
+            message.contains('HandshakeException') ||
+            message.contains('CERTIFICATE')) {
+          message = 'Unable to connect to server. Please check your internet connection and try again.';
+        }
         setState(() {
-          _error = e.toString();
+          _error = message;
         });
       }
     } finally {
@@ -180,47 +189,47 @@ class _SignupScreenState extends State<SignupScreen> {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.all(22),
-                    margin: const EdgeInsets.only(bottom: 18),
-                    decoration: BoxDecoration(
-                      gradient: const LinearGradient(
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                        colors: [AppColors.primary, AppColors.secondary],
-                      ),
-                      borderRadius: BorderRadius.circular(24),
-                      boxShadow: [
-                        BoxShadow(
-                          color: AppColors.primary.withOpacity(0.16),
-                          blurRadius: 18,
-                          offset: const Offset(0, 10),
-                        ),
-                      ],
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text(
-                          'Create your account and start listing fast.',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 24,
-                            fontWeight: FontWeight.w800,
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          'Register once, then manage homes, profiles, and agent requests from a phone-friendly layout.',
-                          style: TextStyle(
-                            color: Colors.white.withOpacity(0.84),
-                            height: 1.5,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
+                  // Container(
+                  //   width: double.infinity,
+                  //   padding: const EdgeInsets.all(22),
+                  //   margin: const EdgeInsets.only(bottom: 18),
+                  //   decoration: BoxDecoration(
+                  //     gradient: const LinearGradient(
+                  //       begin: Alignment.topLeft,
+                  //       end: Alignment.bottomRight,
+                  //       colors: [AppColors.primary, AppColors.secondary],
+                  //     ),
+                  //     borderRadius: BorderRadius.circular(24),
+                  //     boxShadow: [
+                  //       BoxShadow(
+                  //         color: AppColors.primary.withOpacity(0.16),
+                  //         blurRadius: 18,
+                  //         offset: const Offset(0, 10),
+                  //       ),
+                  //     ],
+                  //   ),
+                  //   child: Column(
+                  //     crossAxisAlignment: CrossAxisAlignment.start,
+                  //     children: [
+                  //       const Text(
+                  //         'Create your account and start listing fast.',
+                  //         style: TextStyle(
+                  //           color: Colors.white,
+                  //           fontSize: 24,
+                  //           fontWeight: FontWeight.w800,
+                  //         ),
+                  //       ),
+                  //       const SizedBox(height: 8),
+                  //       Text(
+                  //         'Register once, then manage homes, profiles, and agent requests from a phone-friendly layout.',
+                  //         style: TextStyle(
+                  //           color: Colors.white.withOpacity(0.84),
+                  //           height: 1.5,
+                  //         ),
+                  //       ),
+                  //     ],
+                  //   ),
+                  // ),
                   Card(
                     elevation: 8,
                     shape: RoundedRectangleBorder(

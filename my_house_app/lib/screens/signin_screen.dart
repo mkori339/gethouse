@@ -146,8 +146,17 @@ class _SigninScreenState extends State<SigninScreen> {
         _error = message;
       });
     } catch (e) {
+      // Handle socket/network errors more gracefully
+      String message = e.toString();
+      if (message.contains('SocketException') || 
+          message.contains('Connection reset') ||
+          message.contains('Connection refused') ||
+          message.contains('HandshakeException') ||
+          message.contains('CERTIFICATE')) {
+        message = 'Unable to connect to server. Please check your internet connection and try again.';
+      }
       setState(() {
-        _error = e.toString();
+        _error = message;
       });
     } finally {
       if (mounted) {
@@ -176,47 +185,47 @@ class _SigninScreenState extends State<SigninScreen> {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.all(22),
-                    margin: const EdgeInsets.only(bottom: 18),
-                    decoration: BoxDecoration(
-                      gradient: const LinearGradient(
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                        colors: [AppColors.primary, AppColors.secondary],
-                      ),
-                      borderRadius: BorderRadius.circular(24),
-                      boxShadow: [
-                        BoxShadow(
-                          color: AppColors.primary.withOpacity(0.18),
-                          blurRadius: 18,
-                          offset: const Offset(0, 10),
-                        ),
-                      ],
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text(
-                          'Your home search starts where you left it.',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 24,
-                            fontWeight: FontWeight.w800,
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          'Use your account to save searches, manage posts, and move through the app with mobile-first navigation.',
-                          style: TextStyle(
-                            color: Colors.white.withOpacity(0.84),
-                            height: 1.5,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ).animate().fadeIn(duration: 350.ms).slideY(begin: -0.04),
+                  // Container(
+                  //   width: double.infinity,
+                  //   padding: const EdgeInsets.all(22),
+                  //   margin: const EdgeInsets.only(bottom: 18),
+                  //   decoration: BoxDecoration(
+                  //     gradient: const LinearGradient(
+                  //       begin: Alignment.topLeft,
+                  //       end: Alignment.bottomRight,
+                  //       colors: [AppColors.primary, AppColors.secondary],
+                  //     ),
+                  //     borderRadius: BorderRadius.circular(24),
+                  //     boxShadow: [
+                  //       BoxShadow(
+                  //         color: AppColors.primary.withOpacity(0.18),
+                  //         blurRadius: 18,
+                  //         offset: const Offset(0, 10),
+                  //       ),
+                  //     ],
+                  //   ),
+                  //   child: Column(
+                  //     crossAxisAlignment: CrossAxisAlignment.start,
+                  //     children: [
+                  //       const Text(
+                  //         'Your home search starts where you left it.',
+                  //         style: TextStyle(
+                  //           color: Colors.white,
+                  //           fontSize: 24,
+                  //           fontWeight: FontWeight.w800,
+                  //         ),
+                  //       ),
+                  //       const SizedBox(height: 8),
+                  //       Text(
+                  //         'Use your account to save searches, manage posts, and move through the app with mobile-first navigation.',
+                  //         style: TextStyle(
+                  //           color: Colors.white.withOpacity(0.84),
+                  //           height: 1.5,
+                  //         ),
+                  //       ),
+                  //     ],
+                  //   ),
+                  // ).animate().fadeIn(duration: 350.ms).slideY(begin: -0.04),
                   Card(
                     elevation: 16,
                     shape: RoundedRectangleBorder(
