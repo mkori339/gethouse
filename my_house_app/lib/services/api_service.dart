@@ -1,14 +1,18 @@
 // lib/services/api_service.dart
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
 import 'package:file_picker/file_picker.dart';
-import 'auth_service.dart' ;
+import 'auth_service.dart';
+
 class ApiService {
   ApiService._(); // private
-  static const String baseUrl = 'https://sever.mkori.online'; // <- change to your backend
+  static const String baseUrl =
+      'https://sever.mkori.online'; // <- change to your backend
+  static const Duration _requestTimeout = Duration(seconds: 20);
 
   // keys
   static const String _tokenKey = 'api_token';
@@ -27,7 +31,7 @@ class ApiService {
 
   /// Get stored token (or empty string if none)
   static Future<String> _getStoredToken() async {
-    final token= await AuthService.getToken();
+    final token = await AuthService.getToken();
     return token ?? '';
   }
 
@@ -42,6 +46,69 @@ class ApiService {
       headers['Authorization'] = 'Bearer $token';
     }
     return headers;
+  }
+
+  static Future<http.Response> _sendRequest(
+    Future<http.Response> Function() request, {
+    required Uri uri,
+    required String method,
+  }) async {
+    try {
+      return await request().timeout(_requestTimeout);
+    } on TimeoutException {
+      throw ApiException(408, {
+        'message':
+            '$method ${uri.path} timed out after ${_requestTimeout.inSeconds} seconds.',
+        'url': uri.toString(),
+      });
+    } on SocketException catch (e) {
+      throw ApiException(0, {
+        'message': 'Network error while calling ${uri.host}: ${e.message}',
+        'url': uri.toString(),
+      });
+    } on HandshakeException catch (e) {
+      throw ApiException(495, {
+        'message': 'TLS handshake failed for ${uri.host}: ${e.message}',
+        'url': uri.toString(),
+      });
+    } on HttpException catch (e) {
+      throw ApiException(0, {
+        'message': 'HTTP client error while calling ${uri.host}: ${e.message}',
+        'url': uri.toString(),
+      });
+    }
+  }
+
+  static Future<http.Response> _sendMultipartRequest(
+    http.MultipartRequest request,
+  ) async {
+    try {
+      final streamed = await request.send().timeout(_requestTimeout);
+      return await http.Response.fromStream(streamed).timeout(_requestTimeout);
+    } on TimeoutException {
+      throw ApiException(408, {
+        'message':
+            'POST ${request.url.path} timed out after ${_requestTimeout.inSeconds} seconds.',
+        'url': request.url.toString(),
+      });
+    } on SocketException catch (e) {
+      throw ApiException(0, {
+        'message':
+            'Network error while calling ${request.url.host}: ${e.message}',
+        'url': request.url.toString(),
+      });
+    } on HandshakeException catch (e) {
+      throw ApiException(495, {
+        'message': 'TLS handshake failed for ${request.url.host}: ${e.message}',
+        'url': request.url.toString(),
+      });
+    } on HttpException catch (e) {
+      throw ApiException(0, {
+        'message':
+            'HTTP client error while calling ${request.url.host}: ${e.message}',
+        'url': request.url.toString(),
+      });
+    }
   }
 
   /// Handle http.Response -> decode json or throw
@@ -64,47 +131,50 @@ class ApiService {
   }
 
   /// GET request with query parameters for pagination and filtering
- static Future<dynamic> get(String path, {Map<String, dynamic>? params}) async {
-  Uri uri;
+  static Future<dynamic> get(String path,
+      {Map<String, dynamic>? params}) async {
+    Uri uri;
 
-  if (path.startsWith('http://') || path.startsWith('https://')) {
-    uri = Uri.parse(path);
-  } else {
-    // Ensure path starts with '/'
-    final normalizedPath = path.startsWith('/') ? path : '/$path';
-    uri = Uri.parse('$baseUrl$normalizedPath');
+    if (path.startsWith('http://') || path.startsWith('https://')) {
+      uri = Uri.parse(path);
+    } else {
+      // Ensure path starts with '/'
+      final normalizedPath = path.startsWith('/') ? path : '/$path';
+      uri = Uri.parse('$baseUrl$normalizedPath');
+    }
+
+    // Add query parameters if provided
+    if (params != null && params.isNotEmpty) {
+      final queryParams = <String, String>{};
+      params.forEach((key, value) {
+        if (value != null) {
+          queryParams[key] = value.toString();
+        }
+      });
+      uri = uri.replace(queryParameters: queryParams);
+    }
+
+    // Always include Authorization token
+    final headers = await _getHeaders(json: false);
+
+    final resp = await _sendRequest(
+      () => http.get(uri, headers: headers),
+      uri: uri,
+      method: 'GET',
+    );
+    return _handleResponse(resp);
   }
-
-  // Add query parameters if provided
-  if (params != null && params.isNotEmpty) {
-    final queryParams = <String, String>{};
-    params.forEach((key, value) {
-      if (value != null) {
-        queryParams[key] = value.toString();
-      }
-    });
-    uri = uri.replace(queryParameters: queryParams);
-  }
-
-  // Always include Authorization token
-  final headers = await _getHeaders(json: false);
-
-  // Example: Add Bearer token if available
-  final token = await _getStoredToken(); // <-- implement this function to get stored JWT
-  if (token.isNotEmpty) {
-    headers['Authorization'] = 'Bearer $token';
-  }
-
-  final resp = await http.get(uri, headers: headers);
-  return _handleResponse(resp);
-}
-
 
   /// POST JSON request
-  static Future<dynamic> postJson(String path, Map<String, dynamic> body) async {
+  static Future<dynamic> postJson(
+      String path, Map<String, dynamic> body) async {
     final uri = Uri.parse(_fullUrl(path));
     final headers = await _getHeaders(json: true);
-    final resp = await http.post(uri, headers: headers, body: jsonEncode(body));
+    final resp = await _sendRequest(
+      () => http.post(uri, headers: headers, body: jsonEncode(body)),
+      uri: uri,
+      method: 'POST',
+    );
     return _handleResponse(resp);
   }
 
@@ -112,7 +182,11 @@ class ApiService {
   static Future<dynamic> putJson(String path, Map<String, dynamic> body) async {
     final uri = Uri.parse(_fullUrl(path));
     final headers = await _getHeaders(json: true);
-    final resp = await http.put(uri, headers: headers, body: jsonEncode(body));
+    final resp = await _sendRequest(
+      () => http.put(uri, headers: headers, body: jsonEncode(body)),
+      uri: uri,
+      method: 'PUT',
+    );
     return _handleResponse(resp);
   }
 
@@ -120,23 +194,32 @@ class ApiService {
   static Future<dynamic> delete(String path) async {
     final uri = Uri.parse(_fullUrl(path));
     final headers = await _getHeaders(json: false);
-    final resp = await http.delete(uri, headers: headers);
+    final resp = await _sendRequest(
+      () => http.delete(uri, headers: headers),
+      uri: uri,
+      method: 'DELETE',
+    );
     return _handleResponse(resp);
   }
 
   /// POST form (x-www-form-urlencoded)
-  static Future<dynamic> postForm(String path, Map<String, String> fields) async {
+  static Future<dynamic> postForm(
+      String path, Map<String, String> fields) async {
     final uri = Uri.parse(_fullUrl(path));
     final headers = await _getHeaders(json: false);
     // ensure content-type for form
     headers['Content-Type'] = 'application/x-www-form-urlencoded';
-    final resp = await http.post(uri, headers: headers, body: fields);
+    final resp = await _sendRequest(
+      () => http.post(uri, headers: headers, body: fields),
+      uri: uri,
+      method: 'POST',
+    );
     return _handleResponse(resp);
   }
 
   /// Multipart upload (useful for images/files)
-  /// files: List<PlatformFile> (from file_picker) OR List<File> for mobile
-  /// fieldName: name of field for each file (default 'images[]')
+  /// `files`: `List<PlatformFile>` from `file_picker` or `List<File>` for mobile
+  /// `fieldName`: field name for each file, defaults to `images[]`
   static Future<dynamic> postMultipart({
     required String path,
     Map<String, String>? fields,
@@ -146,6 +229,7 @@ class ApiService {
   }) async {
     final uri = Uri.parse(_fullUrl(path));
     final request = http.MultipartRequest('POST', uri);
+    request.headers['Accept'] = 'application/json';
 
     // add fields
     if (fields != null) request.fields.addAll(fields);
@@ -190,8 +274,7 @@ class ApiService {
       }
     }
 
-    final streamed = await request.send();
-    final resp = await http.Response.fromStream(streamed);
+    final resp = await _sendMultipartRequest(request);
     return _handleResponse(resp);
   }
 
@@ -242,7 +325,8 @@ class ApiService {
   }
 
   /// Report a post
-  static Future<dynamic> reportPost(int postId, String phone, String reason) async {
+  static Future<dynamic> reportPost(
+      int postId, String phone, String reason) async {
     return postJson('/api/posts/$postId/report', {
       'phone': phone,
       'reason': reason,
@@ -258,22 +342,21 @@ class ApiService {
     int page = 1,
   }) async {
     final params = <String, dynamic>{'page': page};
-    
+
     if (category != null) params['category'] = category;
     if (type != null) params['type'] = type;
     if (region != null) params['region'] = region;
     if (maxPrice != null) params['max_price'] = maxPrice;
-    
+
     return get('/api/posts/search', params: params);
   }
 }
-
 
 class ApiException implements Exception {
   final int status;
   final dynamic body;
   ApiException(this.status, this.body);
-  
+
   @override
   String toString() => 'ApiException(status: $status, body: $body)';
 }
